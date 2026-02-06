@@ -75,7 +75,7 @@ function f1_manager_suite_init() {
     new F1_WM_Stand();
     new F1_Teams();
     new F1_Drivers();
-    new F1_Calendar();
+    new F1_Manager_Calendar();
     new F1_Theme_Tweaks();
 }
 add_action( 'plugins_loaded', 'f1_manager_suite_init' );
