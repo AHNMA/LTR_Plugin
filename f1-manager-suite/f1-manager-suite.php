@@ -63,6 +63,7 @@ require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-drivers.php';
 require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-calendar.php';
 require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-theme-tweaks.php';
 require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-footer.php';
+require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-logo-switcher.php';
 
 // ==========================================================================
 // 3. INITIALIZATION
@@ -79,6 +80,7 @@ function f1_manager_suite_init() {
     new F1_Manager_Calendar();
     new F1_Theme_Tweaks();
     new F1_Footer();
+    new F1_Logo_Switcher();
 }
 add_action( 'plugins_loaded', 'f1_manager_suite_init' );
 
