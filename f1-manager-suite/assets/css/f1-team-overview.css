@@ -1,0 +1,418 @@
+    .f1ov-wrap{
+      --card:#FFFFFF;
+      --text:#111111;
+      --head:#202020;
+      --accent:#E00078;
+
+      --hover-facebook:#1877F2;
+      --hover-instagram:#E1306C;
+      --hover-x:#6c6c6c;
+
+      --flag-w:20px;
+      --flag-h:13px;
+
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .f1ov-wrap *{ box-sizing:border-box; }
+
+    .f1ov-team{
+      background: var(--card);
+      border-radius: 0 !important;
+      overflow:hidden;
+      box-shadow:0 10px 26px rgba(0,0,0,.06);
+      position:relative;
+      margin: 0 0 22px 0;
+    }
+    .f1ov-team::before{
+      content:"";
+      position:absolute; top:0; left:0; right:0;
+      height:49px;
+      background: var(--head);
+      z-index:0;
+      pointer-events:none;
+    }
+    .f1ov-team::after{
+      content:"";
+      position:absolute;
+      top:45px;
+      left:0; right:0;
+      height:4px;
+      background: var(--accent);
+      z-index:1;
+      pointer-events:none;
+    }
+
+    /* Klick-Overlay */
+    .f1ov-driver,
+    .f1ov-teaminfo{ position:relative; }
+
+    .f1ov-cardlink{
+      position:absolute;
+      inset:0;
+      z-index:5;
+      text-decoration:none !important;
+      background:transparent !important;
+    }
+
+    /* FIX: Parents NICHT über Overlay legen */
+    .f1ov-driver-media,
+    .f1ov-driver-content{
+      position:relative;
+      z-index:auto;
+    }
+
+    /* Socials über Overlay (klickbar + Hover) */
+    .f1ov__social,
+    .f1ov__social a,
+    .f1ov-driver-social--head,
+    .f1ov-driver-social--head a,
+    .f1ov-driver-social--belowname,
+    .f1ov-driver-social--belowname a{
+      position:relative;
+      z-index:10;
+    }
+
+    .f1ov-head{
+      min-height:49px;
+      position:relative;
+      z-index:2;
+      display:flex;
+      align-items:center;
+      padding:0 16px;
+    }
+    .f1ov-head__inner{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .f1ov-head-left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .f1ov-teamlogo{
+      width:28px; height:28px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      box-shadow: inset 0 0 0 0px rgba(0,0,0,.18);
+    }
+    .f1ov-teamlogo img{ width:100%; height:100%; object-fit:contain; display:block; }
+
+    .f1ov-teamname{
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#fff;
+      margin:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 62vw;
+    }
+
+    /* Socials */
+    .f1ov__social{
+      display:flex;
+      gap:6px;
+      justify-content:flex-end;
+      align-items:center;
+      flex:0 0 auto;
+    }
+    .f1ov__social a,
+    .f1ov__social a:link,
+    .f1ov__social a:visited{
+      width:28px;
+      height:28px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none !important;
+      background:transparent !important;
+      color:#fff !important;
+      opacity:.92;
+      transition: background-color .18s ease, opacity .18s ease;
+    }
+    .f1ov__social i{ font-size:16px; line-height:1; color: currentColor !important; }
+    .f1ov__social a[data-social="facebook"]:hover{ background:var(--hover-facebook) !important; opacity:1; }
+    .f1ov__social a[data-social="instagram"]:hover{ background:var(--hover-instagram) !important; opacity:1; }
+    .f1ov__social a[data-social="x"]:hover{ background:var(--hover-x) !important; opacity:1; }
+
+    .f1ov-body{
+      padding:22px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      position:relative;
+      z-index:2;
+    }
+
+    .f1ov-drivers{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    .f1ov-driver{
+      background: rgba(0,0,0,.00);
+      border-left: 0px solid var(--accent);
+      padding:14px;
+      display:grid;
+      grid-template-columns: 155px 1fr;
+      gap:14px;
+      min-width:0;
+    }
+
+    .f1ov-driver-media{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+    }
+
+    .f1ov-avatar{
+      width:155px;
+      height:155px;
+      overflow:hidden;
+      background: rgba(0,0,0,.00);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .f1ov-avatar img{ width:100%; height:100; object-fit:cover; display:block; }
+    .f1ov-avatar--empty{ font-weight:900; color:rgba(0,0,0,.5); font-size:12px; }
+
+    /* Socials unter Bild (Default) */
+    .f1ov-driver-media .f1ov__social{
+      justify-content:center;
+    }
+    .f1ov-driver-media .f1ov__social a{ color: var(--text) !important; opacity:1; }
+    .f1ov-driver-media .f1ov__social a:hover i{ color:#fff !important; }
+    .f1ov-driver-media .f1ov__social a[data-social="facebook"]:hover{ background:var(--hover-facebook) !important; }
+    .f1ov-driver-media .f1ov__social a[data-social="instagram"]:hover{ background:var(--hover-instagram) !important; }
+    .f1ov-driver-media .f1ov__social a[data-social="x"]:hover{ background:var(--hover-x) !important; }
+
+    .f1ov-driver-content{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .f1ov-driverhead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      min-width:0;
+    }
+    .f1ov-driverhead-left{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+    }
+
+    .f1ov-drivername{
+      font-size:22px;
+      font-weight:900;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin:0 !important;
+      line-height:1 !important;
+      color: var(--text) !important;
+      min-width:0;
+    }
+
+    .f1ov-flag{
+      width:var(--flag-w);
+      height:var(--flag-h);
+      display:inline-flex;
+      border:1px solid rgba(127,127,127,.45);
+      background:#fff;
+      transform: translateY(2px);
+      flex:0 0 auto;
+    }
+    .f1ov-flag img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    /* Socials im Header (rechts neben Flagge) */
+    .f1ov-driver-social--head{
+      display:none;
+      justify-content:flex-end;
+      align-items:center;
+      gap:6px;
+      flex:0 0 auto;
+    }
+    .f1ov-driver-social--head a,
+    .f1ov-driver-social--head a:link,
+    .f1ov-driver-social--head a:visited{
+      width:26px;
+      height:26px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none !important;
+      background:transparent !important;
+      color: var(--text) !important;
+      transition: background-color .18s ease;
+    }
+    .f1ov-driver-social--head i{ font-size:15px; line-height:1; color: currentColor !important; }
+    .f1ov-driver-social--head a:hover i{ color:#fff !important; }
+    .f1ov-driver-social--head a[data-social="facebook"]:hover{ background:var(--hover-facebook) !important; }
+    .f1ov-driver-social--head a[data-social="instagram"]:hover{ background:var(--hover-instagram) !important; }
+    .f1ov-driver-social--head a[data-social="x"]:hover{ background:var(--hover-x) !important; }
+
+    /* Socials unter Name (Stapelmodus) */
+    .f1ov-driver-social--belowname{
+      display:none;
+      justify-content:center;
+      align-items:center;
+      gap:6px;
+      margin-top:8px;
+    }
+    .f1ov-driver-social--belowname a,
+    .f1ov-driver-social--belowname a:link,
+    .f1ov-driver-social--belowname a:visited{
+      width:28px;
+      height:28px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none !important;
+      background:transparent !important;
+      color: var(--text) !important;
+      transition: background-color .18s ease;
+    }
+    .f1ov-driver-social--belowname i{ font-size:16px; line-height:1; color: currentColor !important; }
+    .f1ov-driver-social--belowname a:hover i{ color:#fff !important; }
+    .f1ov-driver-social--belowname a[data-social="facebook"]:hover{ background:var(--hover-facebook) !important; }
+    .f1ov-driver-social--belowname a[data-social="instagram"]:hover{ background:var(--hover-instagram) !important; }
+    .f1ov-driver-social--belowname a[data-social="x"]:hover{ background:var(--hover-x) !important; }
+
+    .f1ov-driver-meta{
+      list-style:none !important;
+      margin:0 !important;
+      padding:0 !important;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 14px;
+      min-width:0;
+    }
+    .f1ov-driver-meta li{
+      margin:0 !important;
+      padding:10px 12px !important;
+      background: rgba(0,0,0,.03);
+      border-left: 3px solid var(--accent);
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+
+    .f1ov-label{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color: rgba(17,17,17,.65);
+      line-height:1.1;
+    }
+    .f1ov-val{
+      font-size:14px;
+      font-weight:900;
+      color: var(--text);
+      line-height:1.25;
+      word-break: break-word;
+      min-width:0;
+    }
+
+    .f1ov-teaminfo{
+      border-top:1px solid rgba(0,0,0,.08);
+      padding-top:18px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+      align-items:center;
+    }
+
+    .f1ov-car{
+      width:100%;
+      height:181px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .f1ov-car img{ width:100%; height:100%; object-fit:contain; display:block; }
+
+    .f1ov-team-meta{
+      list-style:none !important;
+      margin:0 !important;
+      padding:0 !important;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 14px;
+      min-width:0;
+    }
+    .f1ov-team-meta li{
+      margin:0 !important;
+      padding:10px 12px !important;
+      background: rgba(0,0,0,.03);
+      border-left: 3px solid var(--accent);
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+
+    /* ===== Responsive ===== */
+
+    @media (min-width: 721px){
+      .f1ov-driver-media .f1ov__social{ display:none !important; }
+      .f1ov-driver-social--belowname{ display:none !important; }
+      .f1ov-driver-social--head{ display:flex !important; }
+      .f1ov-driver-content{ gap:12px; }
+    }
+
+    @media (max-width: 1280px){
+      .f1ov-drivers{ grid-template-columns: 1fr; }
+      .f1ov-teaminfo{ grid-template-columns: 1fr; }
+      .f1ov-car{ max-width:520px; margin: 0 auto; }
+    }
+
+    @media (max-width: 720px){
+      .f1ov-driver{
+        grid-template-columns: 1fr;
+        text-align:center;
+        justify-items:stretch;
+      }
+      .f1ov-driver-content{ align-items:stretch; }
+      .f1ov-driverhead{ justify-content:center; }
+
+      .f1ov-driver-media .f1ov__social{ display:none !important; }
+      .f1ov-driver-social--head{ display:none !important; }
+      .f1ov-driver-social--belowname{ display:flex !important; }
+
+      .f1ov-driver-meta{
+        grid-template-columns: 1fr !important;
+        width:100% !important;
+        max-width:none !important;
+        justify-self:stretch !important;
+        align-self:stretch !important;
+        margin-left:0 !important;
+        margin-right:0 !important;
+      }
+
+      .f1ov-team-meta{ grid-template-columns: 1fr; }
+      .f1ov-teamname{ max-width: 52vw; }
+    }
