@@ -1,0 +1,33 @@
+@media (max-width: 480px) {
+
+  /* Entfernen: rechter Bereich */
+  .main-bar-right {
+    display: none !important;
+  }
+
+  /* Entfernen: Promo im Center */
+  .header-promotion.main-bar-center,
+  .main-bar-center.header-promotion {
+    display: none !important;
+  }
+
+  /* Logo sauber mittig halten (falls Flex/Widths vom Theme reinfunken) */
+  .af-middle-header .af-middle-container,
+  .af-middle-header .container-wrapper,
+  .top-bar-flex {
+    justify-content: center !important;
+  }
+
+  .site-branding,
+  .custom-logo-link {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Falls das Theme das Logo in einer "left" Spalte hält, trotzdem mittig */
+  .logo.main-bar-left {
+    justify-content: center !important;
+  }
+}

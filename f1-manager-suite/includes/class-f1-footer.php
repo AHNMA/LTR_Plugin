@@ -58,7 +58,7 @@ class F1_Footer {
 	}
 
 	public function enqueue_assets() {
-		wp_enqueue_style( 'f1-footer', plugin_dir_url( __FILE__ ) . '../../assets/css/f1-footer.css', array(), '1.0.0' );
+		wp_enqueue_style( 'f1-footer', plugin_dir_url( __FILE__ ) . '../assets/css/f1-footer.css', array(), '1.0.0' );
 	}
 
 	public function render_shortcode( $atts ) {
