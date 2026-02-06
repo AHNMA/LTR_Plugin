@@ -25,6 +25,10 @@ class F1_WM_Stand {
 
 		add_shortcode( 'f1_wm_stand', array( $this, 'shortcode_driver_standings' ) );
 		add_shortcode( 'f1_team_wm_stand', array( $this, 'shortcode_team_standings' ) );
+
+		// Calculator Shortcodes
+		add_shortcode( 'f1_wm_rechnerisch_fahrer', array( $this, 'shortcode_calculator_drivers' ) );
+		add_shortcode( 'f1_wm_rechnerisch_teams', array( $this, 'shortcode_calculator_teams' ) );
 	}
 
 	public function add_capabilities() {
@@ -188,6 +192,14 @@ class F1_WM_Stand {
 		return $this->render_shortcode( 'teams' );
 	}
 
+	public function shortcode_calculator_drivers() {
+		return $this->render_calculator( 'drivers' );
+	}
+
+	public function shortcode_calculator_teams() {
+		return $this->render_calculator( 'teams' );
+	}
+
 	public function render_shortcode( $mode ) {
 		$page_url = get_permalink();
 		$page_url = set_url_scheme( $page_url, 'https' );
@@ -240,6 +252,100 @@ class F1_WM_Stand {
 		extract( $data );
 		require plugin_dir_path( __FILE__ ) . 'frontend/wm-stand-view.php';
 		return ob_get_clean();
+	}
+
+	public function render_calculator( $mode ) {
+		// Ensure assets are loaded
+		$this->enqueue_frontend_assets();
+
+		$data = ( $mode === 'teams' ) ? self::compute_team_standings_auto() : self::compute_standings();
+		$raw_rows = ( $mode === 'teams' ) ? $data['teams'] : $data['drivers'];
+
+		// Simplify rows structure for calculator
+		$rows = array();
+		foreach ( $raw_rows as $r ) {
+			$rows[] = array(
+				'key' => ( $mode === 'teams' ) ? $r['team'] : $r['driver'],
+				'label' => ( $mode === 'teams' ) ? $r['team'] : $r['driver'],
+				'points' => (int)$r['total']
+			);
+		}
+
+		$leader_pts = 0;
+		foreach ( $rows as $r ) $leader_pts = max( $leader_pts, $r['points'] );
+
+		$rem = self::calc_get_remaining_points_total( $mode );
+		$remaining_total = (int)$rem['remaining_total'];
+
+		$contenders = array();
+		foreach ( $rows as $r ) {
+			$p = (int)$r['points'];
+			if ( ( $p + $remaining_total ) >= $leader_pts ) {
+				$r['behind'] = max( 0, $leader_pts - $p );
+				$r['max_final'] = $p + $remaining_total;
+				$contenders[] = $r;
+			}
+		}
+
+		// Sort
+		usort( $contenders, function( $a, $b ) {
+			if ( $a['points'] !== $b['points'] ) return $b['points'] <=> $a['points'];
+			return strcasecmp( $a['label'], $b['label'] );
+		} );
+
+		$title = ( $mode === 'teams' ) ? 'Weltmeisterchancen' : 'Weltmeisterchancen';
+
+		ob_start();
+		require plugin_dir_path( __FILE__ ) . 'frontend/wm-rechner-view.php';
+		return ob_get_clean();
+	}
+
+	/* =========================================================
+	   CALCULATOR HELPER
+	   ========================================================= */
+
+	public static function calc_session_has_results( $race_id, $slug ) {
+		$rows = self::get_session_results( $race_id, $slug );
+		return ! empty( $rows );
+	}
+
+	public static function calc_get_remaining_points_total( $mode ) {
+		$races = self::get_races();
+		if ( empty( $races ) ) return array( 'remaining_total' => 0, 'remaining_races' => 0 );
+
+		$total = 0;
+		$events = 0;
+
+		$pts_race   = ( $mode === 'teams' ) ? 43 : 25; // 25+18 vs 25
+		$pts_sprint = ( $mode === 'teams' ) ? 15 : 8;  // 8+7 vs 8
+
+		foreach ( $races as $r ) {
+			$rid = (int)$r['id'];
+			$wt = self::get_weekend_type( $rid );
+			$sessions = self::get_sessions_for_race( $rid );
+
+			$added = 0;
+			$has_race = isset( $sessions['race'] );
+			$has_sprint = isset( $sessions['sprint'] );
+
+			// Fallback logic from legacy if meta incomplete
+			if ( ! $has_race && ! $has_sprint ) {
+				$has_race = true;
+				if ( $wt === 'sprint' ) $has_sprint = true;
+			}
+
+			if ( $has_sprint && ! self::calc_session_has_results( $rid, 'sprint' ) ) {
+				$total += $pts_sprint;
+				$added += $pts_sprint;
+			}
+			if ( $has_race && ! self::calc_session_has_results( $rid, 'race' ) ) {
+				$total += $pts_race;
+				$added += $pts_race;
+			}
+
+			if ( $added > 0 ) $events++;
+		}
+		return array( 'remaining_total' => $total, 'remaining_races' => $events );
 	}
 
 	/* =========================================================

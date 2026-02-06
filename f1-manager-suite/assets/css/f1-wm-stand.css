@@ -763,3 +763,245 @@ html[data-dracula-scheme="dark"] .f1wms .f1wms-standings thead th:nth-child(3){
   .f1wms{ --posW: 34px; }
   .f1wms-table th{ font-size: 12px; }
 }
+
+/* =========================================================
+   WM-Rechner Overrides (f1wms-champ)
+   ========================================================= */
+.f1wms.f1wms-champ{
+  --nameW: 180px;
+  /* ZENTRALE STEUERUNG: Font-Sizes Mobile Cards */
+  --mposFS: 13px;
+  --mnameFS: 13px;
+  --mmetaFS: 12px;
+  --mlabelFS: 11px;
+  --mvalueFS: 13px;
+}
+
+/* FIX: Unteren Abstand im Shell-Container sicherstellen */
+.f1wms.f1wms-champ .f1wms-shell {
+  padding-bottom: 0px !important;
+}
+
+/* FIX: Margin der Tabelle entfernen (verhindert doppelte Abstände) */
+.f1wms.f1wms-champ table {
+  margin-bottom: 0 !important;
+}
+
+/* TITLE */
+.f1wms.f1wms-champ h1.f1wms-title{
+  position: static;
+  display: block;
+  margin: 0 0 10px 0;
+  padding: 0;
+  font-family: Oswald, "Noto Sans", "Noto Sans CJK SC", "Noto Sans JP", "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 44.8px;
+  letter-spacing: normal;
+  text-transform: none;
+  color: rgb(31, 31, 31);
+  background: transparent;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+/* SPALTENBREITEN */
+.f1wms.f1wms-champ table.f1wms-champ-table col.f1wms-col-pos{ width: var(--posW); }
+.f1wms.f1wms-champ table.f1wms-champ-table col.f1wms-col-name{ width: var(--nameW); }
+
+/* ALIGN */
+.f1wms.f1wms-champ table.f1wms-champ-table th:nth-child(1),
+.f1wms.f1wms-champ table.f1wms-champ-table td:nth-child(1){ text-align:center; }
+
+.f1wms.f1wms-champ table.f1wms-champ-table th:nth-child(2),
+.f1wms.f1wms-champ table.f1wms-champ-table td:nth-child(2){ text-align:left; }
+
+.f1wms.f1wms-champ table.f1wms-champ-table th:nth-child(n+3),
+.f1wms.f1wms-champ table.f1wms-champ-table td:nth-child(n+3){ text-align:center; }
+
+/* PADDING */
+.f1wms.f1wms-champ table.f1wms-champ-table thead th:nth-child(1),
+.f1wms.f1wms-champ table.f1wms-champ-table tbody td:nth-child(1){
+  padding-left: var(--padPosX);
+  padding-right: var(--padPosX);
+}
+.f1wms.f1wms-champ table.f1wms-champ-table thead th:nth-child(2),
+.f1wms.f1wms-champ table.f1wms-champ-table tbody td:nth-child(2){
+  padding-left: var(--padNameX);
+  padding-right: var(--padNameX);
+}
+.f1wms.f1wms-champ table.f1wms-champ-table thead th:nth-child(n+3),
+.f1wms.f1wms-champ table.f1wms-champ-table tbody td:nth-child(n+3){
+  padding-left: var(--padPtsX);
+  padding-right: var(--padPtsX);
+}
+
+/* NAME */
+.f1wms.f1wms-champ td.f1wms-name{
+  font-weight: 900;
+  color: var(--accent);
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  max-width: none;
+}
+
+/* STICKY LEFT COLUMNS */
+@supports (position: sticky){
+  .f1wms.f1wms-champ table.f1wms-champ-table th:nth-child(1),
+  .f1wms.f1wms-champ table.f1wms-champ-table td:nth-child(1){
+    position: sticky;
+    left: 0;
+    z-index: 3;
+  }
+
+  .f1wms.f1wms-champ table.f1wms-champ-table th:nth-child(2),
+  .f1wms.f1wms-champ table.f1wms-champ-table td:nth-child(2){
+    position: sticky;
+    left: var(--posW);
+    z-index: 3;
+  }
+
+  /* Trennschatten nach der fixen Namensspalte */
+  .f1wms.f1wms-champ table.f1wms-champ-table td:nth-child(2){
+    box-shadow: 8px 0 0 rgba(0,0,0,.06);
+  }
+
+  /* Header: Trennschatten + Akzent kombiniert */
+  .f1wms.f1wms-champ table.f1wms-champ-table thead th:nth-child(2){
+    box-shadow: 8px 0 0 rgba(0,0,0,.06), inset 0 -4px 0 var(--accent);
+  }
+
+  /* Header über Body */
+  .f1wms.f1wms-champ table.f1wms-champ-table thead th:nth-child(-n+2){
+    z-index: 6;
+  }
+}
+
+/* Dracula Darkmode Fix */
+html[data-dracula-scheme="dark"] .f1wms.f1wms-champ table.f1wms-champ-table thead th:nth-child(2){
+  background-image: linear-gradient(var(--accent), var(--accent)) !important;
+  background-repeat: no-repeat !important;
+  background-position: left bottom !important;
+  background-size: 100% 4px !important;
+}
+
+/* MOBILE: Card/Accordion View statt Horizontal-Scroll */
+.f1wms.f1wms-champ .f1wms-mobile{ display:none; }
+
+@media (max-width: 768px){
+  .f1wms.f1wms-champ .f1wms-scroll{ display:none; }
+  .f1wms.f1wms-champ .f1wms-mobile{ display:block; }
+}
+
+/* Mobile Cards */
+.f1wms.f1wms-champ .f1wms-mobile{
+  background:#fff;
+  padding: 6px 0;
+}
+
+.f1wms.f1wms-champ details.f1wms-mcard{
+  border-bottom: 1px solid rgba(0,0,0,.10);
+}
+.f1wms.f1wms-champ details.f1wms-mcard:last-child{
+  border-bottom: 0;
+}
+
+.f1wms.f1wms-champ details.f1wms-mcard > summary{
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+
+  display:grid;
+  grid-template-columns: var(--posW) 1fr auto 18px;
+  gap: 10px;
+  align-items:center;
+
+  padding: 12px 12px;
+  background:#fff;
+}
+.f1wms.f1wms-champ details.f1wms-mcard > summary::-webkit-details-marker{ display:none; }
+
+.f1wms.f1wms-champ .f1wms-mpos{
+  font-size: var(--mposFS);
+  font-weight: 900;
+  letter-spacing: .02em;
+  color: var(--ink);
+  text-align: center;
+}
+.f1wms.f1wms-champ .f1wms-mname{
+  font-size: var(--mnameFS);
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1.1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.f1wms.f1wms-champ .f1wms-mmeta{
+  font-size: var(--mmetaFS);
+  font-weight: 900;
+  color: rgba(0,0,0,.65);
+  white-space: nowrap;
+}
+
+.f1wms.f1wms-champ .f1wms-mchev{
+  color: rgba(0,0,0,.55);
+  transition: transform .2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transform-origin: center center;
+}
+.f1wms.f1wms-champ .f1wms-mchev svg{
+  width: 14px;
+  height: 14px;
+  display: block;
+  stroke: currentColor;
+  stroke-width: 3;
+}
+
+.f1wms.f1wms-champ details.f1wms-mcard[open] > summary{
+  background: rgba(224,0,120,.06);
+}
+.f1wms.f1wms-champ details.f1wms-mcard[open] > summary .f1wms-mchev{
+  transform: rotate(45deg);
+}
+
+.f1wms.f1wms-champ .f1wms-mbody{
+  padding: 10px 12px 14px;
+  background: rgba(0,0,0,.03);
+}
+
+.f1wms.f1wms-champ .f1wms-mgrid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+.f1wms.f1wms-champ .f1wms-mitem{ min-width: 0; }
+
+.f1wms.f1wms-champ .f1wms-mlabel{
+  font-size: var(--mlabelFS);
+  font-weight: 900;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,.65);
+  line-height: 1.15;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.f1wms.f1wms-champ .f1wms-mvalue{
+  font-size: var(--mvalueFS);
+  font-weight: 900;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
