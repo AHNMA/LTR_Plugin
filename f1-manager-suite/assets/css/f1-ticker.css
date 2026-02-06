@@ -1,0 +1,167 @@
+/* =========================================================
+   F1 WM Ticker Styles
+   ========================================================= */
+
+.banner-exclusive-posts-wrapper .exclusive-posts:not(.f1wmt-exclusive-posts){display:none!important}
+.f1wmt-banner-exclusive-posts-wrapper{position:relative!important;z-index:8!important;isolation:isolate!important}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-slides{position:relative!important;z-index:1!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-exclusive-posts{display:flex!important;align-items:center!important;gap:100!important}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now{flex:0 0 auto!important}
+
+/* FIX + CENTER (Anti-Jump): Switch rechts absolut fixieren */
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-nowLabel{
+  --f1wmt-nowText-ch:10ch;
+  width:calc(var(--f1wmt-nowText-ch) + 10px + 26px)!important;
+  min-width:calc(var(--f1wmt-nowText-ch) + 10px + 26px)!important;
+
+  position:relative!important;
+  display:block!important;
+  box-sizing:border-box!important;
+  padding:0 26px 0 0!important;
+  margin:0!important;
+}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-nowText{
+  display:block!important;
+  width:var(--f1wmt-nowText-ch)!important;
+  margin:0 auto!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-modeBtn{
+  appearance:none!important;border:0!important;background:transparent!important;padding:0!important;margin:0!important;
+  width:26px!important;height:26px!important;
+
+  position:absolute!important;
+  right:0!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  cursor:pointer!important;color:#fff!important;opacity:.92!important
+}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-modeIcon{width:16px!important;height:16px!important;display:block!important;stroke:currentColor!important;fill:none!important;stroke-width:2.2!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+
+/* ✅ Switch-Click-Animation */
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-modeBtn .f1wmt-arrowUp,
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-modeBtn .f1wmt-arrowDown{
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-modeBtn.is-anim .f1wmt-arrowUp{
+  animation: f1wmtSwitchSplitUp 220ms ease-out 1;
+}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-modeBtn.is-anim .f1wmt-arrowDown{
+  animation: f1wmtSwitchSplitDown 220ms ease-out 1;
+}
+@keyframes f1wmtSwitchSplitUp{
+  0%{ transform: translateY(0); }
+  40%{ transform: translateY(-2.6px); }
+  100%{ transform: translateY(0); }
+}
+@keyframes f1wmtSwitchSplitDown{
+  0%{ transform: translateY(0); }
+  40%{ transform: translateY(2.6px); }
+  100%{ transform: translateY(0); }
+}
+
+/* ✅ Soft Fade beim Wechsel (Mode-Switch) */
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-marquee-viewport{position:relative!important;}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-marquee-track{transition: opacity 30ms ease-in-out!important;}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-marquee.is-fading .f1wmt-marquee-track{opacity:0!important;}
+
+/* ✅ Soft Fade auch für den Label-Text (FAHRER WM / TEAM WM) */
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-nowText{
+  transition: opacity 30ms ease-in-out!important;
+  will-change: opacity!important;
+}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now.is-fading .f1wmt-nowText{
+  opacity:0!important;
+}
+
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-modeBtn:hover{opacity:1!important}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-modeBtn:focus,.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-modeBtn:focus-visible{outline:none!important;box-shadow:none!important}
+
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-slides{display:flex!important;align-items:center!important;gap:0!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-marquee{flex:1 1 auto!important;min-width:0!important;position:relative!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-marquee-viewport{overflow:hidden;width:100%;display:flex;align-items:center}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-marquee-track{display:flex;width:max-content;will-change:transform;transform:translateX(0);animation-name:f1wmtScroll;animation-timing-function:linear;animation-iteration-count:infinite;animation-duration:var(--f1wmt-duration,80s)}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-marquee-group{display:flex;align-items:center;gap:0;width:max-content}
+@keyframes f1wmtScroll{from{transform:translateX(0)}to{transform:translateX(calc(-1 * var(--f1wmt-shift,0px)))}}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-slides a.f1wmt-driver{display:inline-flex!important;align-items:center!important;gap:10px!important;padding-right:30px!important;white-space:nowrap!important;text-decoration:none!important;min-height:52px!important;position:relative!important;z-index:99999!important;pointer-events:auto!important}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-slides a.f1wmt-driver *{pointer-events:auto!important}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-slides a.f1wmt-driver::after{content:""!important;position:absolute!important;right:12px!important;top:50%!important;width:1px!important;height:26px!important;background:rgba(32,32,32,.18)!important;transform:translateY(-50%)!important;pointer-events:none!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-marquee-group a.f1wmt-driver:last-child::after{display:none!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-rank{font-weight:900!important;opacity:.9!important;flex:0 0 auto!important;transform:translateY(-1px)!important;line-height:1!important}
+.f1wmt-banner-exclusive-posts-wrapper .circle-marq{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:40px!important;height:40px!important;border-radius:0!important;overflow:hidden!important;flex:0 0 40px!important;background:rgba(0,0,0,0)!important}
+.f1wmt-banner-exclusive-posts-wrapper .circle-marq img{width:40px!important;height:40px!important;object-fit:cover!important;display:block!important}
+/* Team-Autobilder nur im Team-Item breiter */
+.f1wmt-banner-exclusive-posts-wrapper a.f1wmt-driver.f1wmt-item--teams .circle-marq{width:70px!important;height:36px!important;flex:0 0 70px!important}
+.f1wmt-banner-exclusive-posts-wrapper a.f1wmt-driver.f1wmt-item--teams .circle-marq img{width:70px!important;height:36px!important;object-fit:contain!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-noimg{font-weight:900!important;opacity:.6!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-info{display:flex!important;flex-direction:column!important;justify-content:flex-start!important;align-items:flex-start!important;gap:2px!important;height:auto!important;min-height:0!important;min-width:0!important;margin:0!important;padding:0!important;line-height:1.1!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-nameRow{display:flex!important;align-items:center!important;gap:8px!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-name{font-weight:900!important;opacity:.95!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-trend{display:inline-flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;transform:translateY(1px)!important;margin-top:0!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-trend--up{color:#1a7f37!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-trend--same{color:#e38b16!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-trend--down{color:#d83a3a!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-points{display:block!important;font-weight:900!important;opacity:.90!important;font-size:12px!important;white-space:nowrap!important;margin-top:0!important;padding-top:0!important;line-height:1.1!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-points strong{font-weight:900!important}
+.f1wmt-banner-exclusive-posts-wrapper .f1wmt-loading{display:inline-flex;align-items:center;padding-right:22px;font-weight:900;opacity:.7}
+.f1wmt-banner-exclusive-posts-wrapper,.f1wmt-banner-exclusive-posts-wrapper .exclusive-slides,.f1wmt-banner-exclusive-posts-wrapper .f1wmt-marquee-viewport,.f1wmt-banner-exclusive-posts-wrapper .f1wmt-marquee-track,.f1wmt-banner-exclusive-posts-wrapper .f1wmt-marquee-group{pointer-events:auto!important}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-slides::before,.f1wmt-banner-exclusive-posts-wrapper .exclusive-slides::after,.f1wmt-banner-exclusive-posts-wrapper::before,.f1wmt-banner-exclusive-posts-wrapper::after{pointer-events:none!important}
+.f1wmt-banner-exclusive-posts-wrapper a.f1wmt-driver{cursor:pointer!important}
+
+/* ✅ EXTRA SAFETY: wenn Login oder Burger-Menü offen => Ticker komplett aus Hit-Testing */
+html.bp-acc-open .f1wmt-banner-exclusive-posts-wrapper,
+html.bp-acc-open .f1wmt-banner-exclusive-posts-wrapper *{pointer-events:none!important}
+html.bp-nav-open .f1wmt-banner-exclusive-posts-wrapper,
+html.bp-nav-open .f1wmt-banner-exclusive-posts-wrapper *{pointer-events:none!important}
+html.bp-nav-arming .f1wmt-banner-exclusive-posts-wrapper,
+html.bp-nav-arming .f1wmt-banner-exclusive-posts-wrapper *{pointer-events:none!important}
+
+/* ✅ Unter 480px: Text ausblenden + Pinke Box nur Switch-Breite */
+@media (max-width: 480px){
+  .f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-nowText{display:none!important;}
+  .f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-nowLabel{
+    width:26px!important;min-width:26px!important;height:26px!important;
+    position:relative!important;display:block!important;padding:0!important;box-sizing:border-box!important;
+    --f1wmt-switch-x: 4px;
+  }
+  .f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-modeBtn{
+    position:absolute!important;left:50%!important;top:50%!important;right:auto!important;
+    transform:translate(-50%,-50%) translateX(var(--f1wmt-switch-x))!important;
+  }
+}
+
+/* ✅ Trophy statt 4 Squares (aft-box-ripple) */
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .aft-box-ripple.f1wmt-trophyWrap{
+  width:50px!important;height:50px!important;  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  margin-right:6px!important;overflow:visible!important;
+}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-trophy{
+  margin-top:-1px!important;width:32px!important;height:32px!important;display:block!important;color:#fff!important;
+  animation:f1wmtTrophyBob 1.8s ease-in-out infinite;transform-origin:50% 80%;
+}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-trophy-cup,
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-trophy-base{fill:currentColor;opacity:.95;}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-trophy-handle{
+  fill:none;stroke:currentColor;stroke-width:3;opacity:.9;stroke-linecap:round;stroke-linejoin:round;
+}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-trophy-shine{
+  fill:none;stroke:rgba(255,255,255,.9);stroke-width:3;stroke-linecap:round;opacity:0;
+  animation:f1wmtTrophyShine 2.8s ease-in-out infinite;
+}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-trophy-spark{
+  fill:rgba(255,255,255,.9);opacity:.0;transform-origin:50% 50%;
+  animation:f1wmtTrophySpark 2.4s ease-in-out infinite;
+}
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-s1{ animation-delay:.1s; }
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-s2{ animation-delay:.5s; }
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-s3{ animation-delay:1.0s; }
+.f1wmt-banner-exclusive-posts-wrapper .exclusive-now .f1wmt-s4{ animation-delay:1.4s; }
+
+@keyframes f1wmtTrophyBob{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(0px) scale(1.0);}}
+@keyframes f1wmtTrophyShine{0%{opacity:0;transform:translateX(-6px);}12%{opacity:.85;}25%{opacity:0;transform:translateX(10px);}100%{opacity:0;transform:translateX(10px);}}
+@keyframes f1wmtTrophySpark{0%{opacity:0;transform:scale(.6) rotate(0deg);}12%{opacity:.85;}22%{opacity:0;transform:scale(1.05) rotate(20deg);}100%{opacity:0;transform:scale(1.05) rotate(20deg);}}
