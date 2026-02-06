@@ -41,6 +41,11 @@ class F1_WM_Stand {
 	public function enqueue_frontend_assets() {
 		wp_enqueue_style( 'f1-wm-stand', plugin_dir_url( __FILE__ ) . '../assets/css/f1-wm-stand.css', array(), '1.0.0' );
 		wp_enqueue_script( 'f1-wm-stand', plugin_dir_url( __FILE__ ) . '../assets/js/f1-wm-stand.js', array(), '1.0.0', true );
+
+		// Modal HTML for frontend assets (using footer action since this method runs on enqueue)
+		add_action('wp_footer', function() {
+			echo '<div class="f1wms-swipe-modal" id="f1wmsSwipeModal" aria-hidden="true"><div class="f1wms-swipe-modal__box" role="dialog" aria-modal="true" aria-label="Hinweis: Wischen"><div class="f1wms-swipe-modal__title">Wischen</div><div class="f1wms-swipe-modal__anim" aria-hidden="true"><div class="f1wms-swipe-track"></div><div class="f1wms-swipe-finger"></div></div></div></div>';
+		});
 	}
 
 	/* =========================================================
@@ -60,6 +65,17 @@ class F1_WM_Stand {
 	}
 
 	public function render_admin_page() {
+		// Handle Converter Logic directly before render if posted
+		$converter_output = '';
+		$converter_info   = '';
+
+		if ( isset( $_POST['f1sc_do_convert'] ) && check_admin_referer( 'f1sc_convert', 'f1sc_nonce' ) ) {
+			$input = isset( $_POST['f1sc_input'] ) ? wp_unslash( $_POST['f1sc_input'] ) : '';
+			$res = self::converter_convert_any_to_bulk_tsv( $input );
+			$converter_output = $res['tsv'];
+			$converter_info   = $res['info'];
+		}
+
 		require_once plugin_dir_path( __FILE__ ) . 'admin/wm-stand-admin.php';
 	}
 
@@ -627,5 +643,330 @@ class F1_WM_Stand {
 		} );
 
 		return array( 'races' => $races, 'teams' => array_values( $teams ) );
+	}
+
+	/* =========================================================
+	   CONVERTER LOGIC
+	   ========================================================= */
+
+	public static function converter_convert_any_to_bulk_tsv( $rawInput ) {
+		$rawInput = trim( (string)$rawInput );
+		if ( $rawInput === '' ) return array( 'tsv' => '', 'info' => 'Kein Input.' );
+
+		$parsed = self::converter_parse_input( $rawInput );
+		$rows   = $parsed['rows'] ?? array();
+		$kind   = $parsed['kind'] ?? 'unknown';
+		$hdrs   = $parsed['headers'] ?? array();
+
+		if ( ! $rows ) return array( 'tsv' => '', 'info' => 'Kein Tabellen-Inhalt erkannt.' );
+
+		// Dedupe
+		$unique = array();
+		$cleanRows = array();
+		$idx = 0;
+
+		foreach ( $rows as $r ) {
+			$pos = trim( (string)($r['pos'] ?? '') );
+			$no  = trim( (string)($r['no'] ?? '') );
+
+			if ( ! preg_match( '~^\d+$~', $no ) ) continue;
+			$posOk = (bool) preg_match( '~^\d+$~', $pos ) || (bool) preg_match( '~^(NC|DNF|DNS|DQ|DSQ|EX|EXCLUDED|RET|R)$~i', $pos );
+			if ( ! $posOk ) continue;
+
+			$r['_idx'] = $idx++;
+			$k = $pos . '-' . $no;
+			if ( isset( $unique[$k] ) ) continue;
+			$unique[$k] = true;
+			$cleanRows[] = $r;
+		}
+
+		usort( $cleanRows, function( $a, $b ) {
+			$pa = $a['pos'] ?? '';
+			$pb = $b['pos'] ?? '';
+			$aNum = preg_match( '~^\d+$~', $pa );
+			$bNum = preg_match( '~^\d+$~', $pb );
+			if ( $aNum && $bNum ) return ((int)$pa) <=> ((int)$pb);
+			if ( $aNum && ! $bNum ) return -1;
+			if ( ! $aNum && $bNum ) return 1;
+			return ($a['_idx'] ?? 0) <=> ($b['_idx'] ?? 0);
+		} );
+
+		$out = array();
+		if ( $kind === 'qualifying' ) {
+			$out[] = "Pos.\tDriver\tTeam\tQ1\tQ2\tQ3\tLaps";
+		} elseif ( $kind === 'grid' ) {
+			$out[] = "Pos.\tDriver\tTeam\tTime";
+		} else {
+			$out[] = "Pos.\tDriver\tTeam\tLaps\tTime / Retired\tPts.";
+		}
+
+		foreach ( $cleanRows as $r ) {
+			$pos = $r['pos'] ?? '';
+			$drv = self::converter_clean_driver_name( $r['driver'] ?? '' );
+			$team= $r['team'] ?? '';
+
+			if ( $kind === 'practice' ) {
+				$laps = $r['laps'] ?? '';
+				$time = $r['time_gap'] ?? '';
+				$pts = '';
+			} elseif ( $kind === 'qualifying' ) {
+				$laps = $r['laps'] ?? '';
+				$q1 = $r['q1'] ?? ''; $q2 = $r['q2'] ?? ''; $q3 = $r['q3'] ?? '';
+				$time = self::converter_best_quali_time( $q1, $q2, $q3 );
+				$pts = '';
+			} elseif ( $kind === 'grid' ) {
+				$laps = '0';
+				$time = $r['time'] ?? '';
+				$pts = '';
+			} elseif ( $kind === 'race' ) {
+				$laps = $r['laps'] ?? '';
+				$time = $r['time_retired'] ?? '';
+				$pts = $r['pts'] ?? '';
+			} else {
+				$laps = $r['laps'] ?? '';
+				$time = $r['time_gap'] ?? ( $r['time_retired'] ?? ( $r['time'] ?? '' ) );
+				$pts = $r['pts'] ?? '';
+				if ( $laps === '' && $time !== '' ) $laps = '0';
+			}
+
+			if ( $kind === 'qualifying' ) {
+				$out[] = "$pos\t$drv\t$team\t$q1\t$q2\t$q3\t$laps";
+			} elseif ( $kind === 'grid' ) {
+				$out[] = "$pos\t$drv\t$team\t$time";
+			} else {
+				$out[] = "$pos\t$drv\t$team\t$laps\t$time\t$pts";
+			}
+		}
+
+		$info = 'Erkanntes Format: ' . self::converter_kind_label( $kind );
+		if ( ! empty( $hdrs ) ) $info .= ' (Headers: ' . implode( ', ', $hdrs ) . ')';
+		$info .= ' | Zeilen erkannt: ' . count( $cleanRows );
+
+		return array( 'tsv' => implode( "\n", $out ), 'info' => $info );
+	}
+
+	private static function converter_kind_label( $kind ) {
+		if ( $kind === 'practice' ) return 'FP (Time/Gap + Laps)';
+		if ( $kind === 'qualifying' ) return 'Qualifying (Q1/Q2/Q3 + Laps)';
+		if ( $kind === 'grid' ) return 'Startaufstellung (Time)';
+		if ( $kind === 'race' ) return 'Rennen/Sprint (Laps + Time/Retired + Pts)';
+		return 'Unbekannt';
+	}
+
+	private static function converter_best_quali_time( $q1, $q2, $q3 ) {
+		$q1 = self::converter_norm( $q1 ); $q2 = self::converter_norm( $q2 ); $q3 = self::converter_norm( $q3 );
+		if ( $q3 !== '' && $q3 !== '-' ) return $q3;
+		if ( $q2 !== '' && $q2 !== '-' ) return $q2;
+		if ( $q1 !== '' && $q1 !== '-' ) return $q1;
+		return '';
+	}
+
+	private static function converter_parse_input( $raw ) {
+		if ( stripos( $raw, '<table' ) !== false ) return self::converter_parse_html_table( $raw );
+		if ( strpos( $raw, "\t" ) !== false ) return self::converter_parse_tsv( $raw );
+		return self::converter_parse_plain_text_best_effort( $raw );
+	}
+
+	private static function converter_parse_html_table( $html ) {
+		$wrap = '<!doctype html><html><head><meta charset="utf-8"></head><body>' . $html . '</body></html>';
+		$dom = new DOMDocument();
+		libxml_use_internal_errors( true );
+		$dom->loadHTML( $wrap, LIBXML_NOWARNING | LIBXML_NOERROR );
+		libxml_clear_errors();
+
+		$tables = $dom->getElementsByTagName( 'table' );
+		if ( ! $tables || $tables->length === 0 ) return array( 'kind' => 'unknown', 'headers' => array(), 'rows' => array() );
+
+		$allRows = array();
+		$detectedKind = 'unknown';
+		$detectedHeaders = array();
+
+		for ( $ti = 0; $ti < $tables->length; $ti++ ) {
+			$table = $tables->item( $ti );
+			$headers = array();
+			$thNodes = $table->getElementsByTagName( 'th' );
+			foreach ( $thNodes as $th ) $headers[] = self::converter_norm( $th->textContent );
+
+			$kind = self::converter_detect_kind_from_headers( $headers );
+			if ( $detectedKind === 'unknown' && $kind !== 'unknown' ) {
+				$detectedKind = $kind;
+				$detectedHeaders = $headers;
+			}
+
+			$trNodes = $table->getElementsByTagName( 'tr' );
+			foreach ( $trNodes as $tr ) {
+				$tds = $tr->getElementsByTagName( 'td' );
+				if ( ! $tds->length ) continue;
+				$cells = array();
+				foreach ( $tds as $td ) $cells[] = self::converter_norm( $td->textContent );
+
+				$row = self::converter_map_cells_to_row( $cells, $kind );
+				if ( $row ) $allRows[] = $row;
+			}
+		}
+
+		if ( $detectedKind === 'unknown' ) $detectedKind = self::converter_guess_kind_from_rows( $allRows );
+
+		if ( $detectedKind !== 'unknown' ) {
+			foreach ( $allRows as &$row ) {
+				if ( isset( $row['_raw_cells'] ) ) {
+					$r2 = self::converter_map_cells_to_row( $row['_raw_cells'], $detectedKind );
+					if ( $r2 ) $row = $r2;
+				}
+			}
+		}
+		return array( 'kind' => $detectedKind, 'headers' => $detectedHeaders, 'rows' => $allRows );
+	}
+
+	private static function converter_parse_tsv( $tsv ) {
+		$tsv = str_replace( "\r", "", (string)$tsv );
+		$lines = array_filter( explode( "\n", $tsv ) );
+		if ( ! $lines ) return array( 'kind'=>'unknown', 'headers'=>array(), 'rows'=>array() );
+
+		$headers = array_map( 'trim', explode( "\t", array_shift( $lines ) ) );
+		$kind = self::converter_detect_kind_from_headers( $headers );
+		$rows = array();
+		foreach ( $lines as $l ) {
+			$parts = array_map( 'trim', explode( "\t", $l ) );
+			if ( count( $parts ) < 4 ) continue;
+			if ( ! preg_match( '~^\d+$~', $parts[0] ) ) continue;
+			$row = self::converter_map_cells_to_row( $parts, $kind );
+			if ( $row ) $rows[] = $row;
+		}
+		return array( 'kind' => $kind, 'headers' => $headers, 'rows' => $rows );
+	}
+
+	private static function converter_parse_plain_text_best_effort( $txt ) {
+		$tokens = preg_split( '~\s+~u', trim( str_replace( "\r", "", $txt ) ) );
+		$tokens = array_values( array_filter( $tokens ) );
+		$rows = array();
+		$i = 0;
+		while ( $i < count( $tokens ) ) {
+			$t0 = $tokens[$i] ?? '';
+			$t1 = $tokens[$i+1] ?? '';
+			if ( ! preg_match( '~^\d+$~', $t0 ) || ! preg_match( '~^\d+$~', $t1 ) ) { $i++; continue; }
+
+			$pos = $t0; $no = $t1; $i += 2;
+			$chunk = array();
+			while ( $i < count( $tokens ) ) {
+				$a = $tokens[$i] ?? '';
+				$b = $tokens[$i+1] ?? '';
+				if ( preg_match( '~^\d+$~', $a ) && preg_match( '~^\d+$~', $b ) ) break;
+				$chunk[] = $a; $i++;
+			}
+			if ( ! $chunk ) continue;
+
+			$pts = '';
+			if ( preg_match( '~^\d+$~', end( $chunk ) ) ) $pts = array_pop( $chunk );
+
+			$laps = ''; $lapsIdx = -1;
+			for ( $j=count( $chunk )-1; $j>=0; $j-- ) {
+				if ( preg_match( '~^\d+$~', $chunk[$j] ) ) { $laps = $chunk[$j]; $lapsIdx = $j; break; }
+			}
+
+			$pre = $chunk;
+			$time = '';
+			if ( $lapsIdx >= 0 ) {
+				$pre = array_slice( $chunk, 0, $lapsIdx );
+				$time = implode( ' ', array_slice( $chunk, $lapsIdx+1 ) );
+			}
+
+			$split = self::converter_split_driver_team( $pre );
+			$rows[] = array(
+				'pos' => $pos, 'no' => $no, 'driver' => $split['driver'], 'team' => $split['team'],
+				'laps' => $laps, 'time_gap' => $time, 'time_retired' => $time, 'pts' => $pts,
+				'_raw_cells' => array_merge( array( $pos, $no, $split['driver'], $split['team'] ), $chunk )
+			);
+		}
+		$kind = self::converter_guess_kind_from_rows( $rows );
+		return array( 'kind' => $kind, 'headers' => array(), 'rows' => $rows );
+	}
+
+	private static function converter_detect_kind_from_headers( $headers ) {
+		$h = array_map( function( $x ) { return strtolower( self::converter_norm( $x ) ); }, $headers );
+		if ( in_array( 'laps', $h ) && ( in_array( 'time / retired', $h ) || in_array( 'time/retired', $h ) ) && ( in_array( 'pts.', $h ) || in_array( 'pts', $h ) ) ) return 'race';
+		if ( in_array( 'q1', $h ) && in_array( 'q2', $h ) && in_array( 'q3', $h ) ) return 'qualifying';
+		if ( ( in_array( 'time / gap', $h ) || in_array( 'time/gap', $h ) ) && in_array( 'laps', $h ) ) return 'practice';
+		if ( in_array( 'time', $h ) && in_array( 'driver', $h ) && ! in_array( 'laps', $h ) ) return 'grid';
+		return 'unknown';
+	}
+
+	private static function converter_guess_kind_from_rows( $rows ) {
+		foreach ( $rows as $r ) {
+			if ( empty( $r['_raw_cells'] ) ) continue;
+			$n = count( $r['_raw_cells'] );
+			if ( $n === 6 ) return 'practice';
+			if ( $n === 5 ) return 'grid';
+			if ( $n === 8 ) return 'qualifying';
+			if ( $n === 7 ) return 'race';
+		}
+		return 'unknown';
+	}
+
+	private static function converter_map_cells_to_row( $cells, $kind ) {
+		$cells = array_map( array( __CLASS__, 'converter_norm' ), $cells );
+		if ( count( $cells ) < 4 ) return null;
+		$rc = $cells;
+
+		if ( $kind === 'unknown' ) {
+			$n = count( $cells );
+			if ( $n === 6 ) $kind = 'practice';
+			elseif ( $n === 5 ) $kind = 'grid';
+			elseif ( $n === 8 ) $kind = 'qualifying';
+			elseif ( $n === 7 ) $kind = 'race';
+		}
+
+		$base = array( 'pos' => $cells[0], 'no' => $cells[1], 'driver' => self::converter_clean_driver_name( $cells[2] ), 'team' => $cells[3], '_raw_cells' => $rc );
+
+		if ( $kind === 'practice' && count( $cells ) >= 6 ) return array_merge( $base, array( 'time_gap' => $cells[4], 'laps' => $cells[5] ) );
+		if ( $kind === 'qualifying' && count( $cells ) >= 8 ) return array_merge( $base, array( 'q1' => $cells[4], 'q2' => $cells[5], 'q3' => $cells[6], 'laps' => $cells[7] ) );
+		if ( $kind === 'grid' && count( $cells ) >= 5 ) return array_merge( $base, array( 'time' => $cells[4] ) );
+		if ( $kind === 'race' && count( $cells ) >= 7 ) return array_merge( $base, array( 'laps' => $cells[4], 'time_retired' => $cells[5], 'pts' => $cells[6] ) );
+
+		return $base;
+	}
+
+	private static function converter_norm( $s ) {
+		$s = str_replace( "\xC2\xA0", ' ', (string)$s );
+		$s = wp_strip_all_tags( $s );
+		$s = preg_replace( '~\s+~u', ' ', $s );
+		return trim( $s );
+	}
+
+	private static function converter_clean_driver_name( $name ) {
+		$name = self::converter_norm( $name );
+		if ( preg_match( '~\s~u', $name ) ) {
+			$name = preg_replace( '~\s+[A-Z]{3}$~u', '', $name );
+			$name = preg_replace( '~([\p{L}])([A-Z]{3})$~u', '$1', $name );
+		}
+		return trim( preg_replace( '~\s+~u', ' ', $name ) );
+	}
+
+	private static function converter_split_driver_team( $tokens ) {
+		$toks = array_values( array_filter( array_map( array( __CLASS__, 'converter_norm' ), $tokens ) ) );
+		if ( ! $toks ) return array( 'driver' => '', 'team' => '' );
+
+		$known = array( 'Red Bull Racing', 'McLaren', 'Ferrari', 'Mercedes', 'Aston Martin', 'Alpine', 'Haas F1 Team', 'Williams', 'Racing Bulls', 'Kick Sauber', 'Sauber', 'RB', 'Visa Cash App RB', 'Visa Cash App RB F1 Team' );
+		$lower = array_map( 'strtolower', $toks );
+
+		foreach ( $known as $t ) {
+			$parts = array_map( 'strtolower', preg_split( '~\s+~', trim( $t ) ) );
+			if ( count( $parts ) > count( $lower ) ) continue;
+			$ok = true;
+			for ( $j=0; $j<count( $parts ); $j++ ) {
+				if ( $lower[ count( $lower ) - count( $parts ) + $j ] !== $parts[$j] ) { $ok = false; break; }
+			}
+			if ( $ok ) {
+				$team = implode( ' ', array_slice( $toks, count( $toks ) - count( $parts ) ) );
+				$driver = implode( ' ', array_slice( $toks, 0, count( $toks ) - count( $parts ) ) );
+				return array( 'driver' => self::converter_clean_driver_name( $driver ), 'team' => $team );
+			}
+		}
+
+		if ( count( $toks ) >= 2 ) {
+			$team = array_pop( $toks );
+			return array( 'driver' => self::converter_clean_driver_name( implode( ' ', $toks ) ), 'team' => $team );
+		}
+		return array( 'driver' => self::converter_clean_driver_name( implode( ' ', $toks ) ), 'team' => '' );
 	}
 }
