@@ -1,3 +1,8 @@
+/* =========================================================
+   F1 PROFILE CSS (Merged)
+   ========================================================= */
+
+/* --- Profile Wrapper --- */
 .f1fp-wrap{
   --card:#FFFFFF; --text:#111111; --head:#202020; --accent:#E00078; --muted:rgba(17,17,17,.65); --line:rgba(0,0,0,.10);
   --hover-facebook:#1877F2; --hover-instagram:#E1306C; --hover-x:#6c6c6c;
@@ -8,7 +13,6 @@
 
 .f1fp-container{ width:100%; max-width:none; margin:0; }
 
-/* Design exakt wie Team-Übersicht */
 .f1fp-card{ background: var(--card); border-radius: 0 !important; box-shadow:0 10px 26px rgba(0,0,0,.06); position:relative; overflow:hidden; margin-bottom: 22px; }
 .f1fp-card::before{ content:""; position:absolute; top:0; left:0; right:0; height:49px; background: var(--head); z-index:0; pointer-events:none; }
 .f1fp-card::after{ content:""; position:absolute; top:45px; left:0; right:0; height:4px; background: var(--accent); z-index:1; pointer-events:none; }
@@ -54,45 +58,20 @@
 
 .f1fp-btn{ display:inline-flex; align-items:center; justify-content:center; padding: 12px 14px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; text-decoration:none !important; border-radius: 0 !important; border: 0; cursor:pointer; user-select:none; font-size: .8125rem; line-height: 1.2; padding-bottom: calc(12px + 1px); transition: opacity .15s ease; }
 
-/* Primary mit Outline */
-.f1fp-btn--primary{
-    background: var(--accent);
-    color:#fff !important;
-    border: 1px solid rgba(0,0,0,.15) !important;
-}
+.f1fp-btn--primary{ background: var(--accent); color:#fff !important; border: 1px solid rgba(0,0,0,.15) !important; }
 .f1fp-btn--primary:hover{ opacity: 0.9; }
 
-/* Ghost mit Outline */
-.f1fp-btn--ghost{
-    background: transparent !important;
-    color: var(--text) !important;
-    border: 1px solid rgba(0,0,0,.15) !important;
-}
-.f1fp-btn--ghost:hover{
-    background: rgba(0,0,0,.04) !important;
-}
+.f1fp-btn--ghost{ background: transparent !important; color: var(--text) !important; border: 1px solid rgba(0,0,0,.15) !important; }
+.f1fp-btn--ghost:hover{ background: rgba(0,0,0,.04) !important; }
 
-/* Orange mit Outline (Neu) */
-.f1fp-btn--orange{
-    background: #ff9800 !important;
-    color: #fff !important;
-    border: 1px solid rgba(0,0,0,.15) !important;
-}
-.f1fp-btn--orange:hover{
-    background: #e68a00 !important;
-}
+.f1fp-btn--orange{ background: #ff9800 !important; color: #fff !important; border: 1px solid rgba(0,0,0,.15) !important; }
+.f1fp-btn--orange:hover{ background: #e68a00 !important; }
 
-/* Danger mit Outline */
-.f1fp-btn--danger{
-    background: #b00020;
-    color:#fff !important;
-    border: 1px solid rgba(0,0,0,.15) !important;
-}
+.f1fp-btn--danger{ background: #b00020; color:#fff !important; border: 1px solid rgba(0,0,0,.15) !important; }
 .f1fp-btn--danger:hover{ background: #d00025; }
 
 .f1fp-btn[disabled], .f1fp-btn.is-disabled{ opacity: .55; cursor: not-allowed !important; filter: grayscale(0.1); }
 
-/* Desktop: No border-top here */
 .f1fp-actions-bar{ display:flex; align-items:center; justify-content:space-between; gap: 12px; flex-wrap:wrap; margin-top:20px; }
 .f1fp-actions-left{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-start; }
 .f1fp-actions-right{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end; margin-left:auto; }
@@ -105,7 +84,6 @@
 .f1fp-section{ padding:0; border:0; background:transparent; }
 .f1fp-section-title{ margin: 0 0 14px 0 !important; font-size: 13px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: var(--text); line-height: 1.2; padding-bottom: 6px; border-bottom:1px solid var(--line); }
 
-/* .f1fp-text-muted für Hinweise */
 .f1fp-text-muted { margin:0 0 14px 0; color: rgba(17,17,17,.72); font-weight:600; font-size:14px; }
 
 .f1fp-fields{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; }
@@ -115,7 +93,6 @@
 .f1fp-textarea{ min-height: 120px; resize: vertical; font-weight: 600; font-size: .875rem; line-height: 1.4; }
 .f1fp-input:focus, .f1fp-textarea:focus{ border-color: var(--accent); border-left-color: var(--accent); box-shadow: 0 5px 15px rgba(0,0,0,.05); }
 
-/* Standard Checkbox Row (Fallback) */
 .f1fp-checkrow{ display:flex; align-items:center; gap:10px; margin-top: 0; font-weight: 700; color: var(--text); font-size: .9375rem; line-height: 1.35; padding-bottom: 1px; }
 .f1fp-checkrow input[type="checkbox"]{ flex-shrink: 0; min-width: 18px; -webkit-appearance:none; appearance:none; width:18px; height:18px; border-radius:0; border:1px solid rgba(0,0,0,.25); background:#eee; display:inline-grid; place-content:center; cursor:pointer; margin:0; }
 .f1fp-checkrow input[type="checkbox"]::before{ content:""; width:8px; height:4px; border-left:2px solid #111; border-bottom:2px solid #111; transform: rotate(-45deg) scale(0); transition: transform .12s ease; }
@@ -124,7 +101,6 @@
 #f1fp-delete-wrap[hidden]{ display:none !important; }
 #f1fp-export-wrap[hidden]{ display:none !important; }
 
-/* Unified Inline Action Row (Delete/Export) */
 .f1fp-inline-action { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 14px; }
 
 .f1fp-connect-btn { width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:12px 14px; background:#fff; border:1px solid rgba(0,0,0,.15); border-left: 3px solid rgba(0,0,0,.15); color:#333; font-weight:800; letter-spacing:.06em; text-transform:uppercase; text-decoration:none !important; font-size:.8125rem; transition:all .15s ease; }
@@ -133,7 +109,6 @@
 
 .f1fp-connected-box { display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid rgba(0,0,0,.15); border-left: 3px solid #28a745; padding:10px 14px; }
 
-/* Container für den Reset-Button */
 .f1fp-pass-col { flex: 0 0 auto; }
 
 @media (max-width: 860px){
@@ -146,23 +121,62 @@
 }
 @media (max-width: 720px){
   .f1fp-fields{ grid-template-columns: 1fr; }
-
-  /* Mobile: Reset Button volle Breite */
   .f1fp-pass-col { width: 100% !important; flex: 0 0 100% !important; margin-top: 10px; }
   .f1fp-pass-col .f1fp-btn { width: 100% !important; }
-
-  /* Mobile: Actions stacken */
   .f1fp-inline-action { flex-direction:column; align-items:stretch; }
   .f1fp-inline-action button { width: 100%; }
-
-  /* Mobile Mode Border & Spacing & Order */
   .f1fp-actions-bar{ flex-direction:column; align-items:stretch; justify-content:flex-start; gap: 10px; margin-top:0; border-top: 1px solid var(--line); padding-top:22px; }
-
-  /* Order: Save(1) -> Export(2) -> Delete(3) */
   .f1fp-actions-right { order: 1; width: 100%; margin-left: 0; }
   .f1fp-actions-left  { order: 2; width: 100%; display: flex; flex-direction: column; gap: 10px; }
   #f1fp-export-toggle { order: 1; width: 100%; }
   #f1fp-delete-toggle { order: 2; width: 100%; }
-
   .f1fp-actions-bar .f1fp-btn, .f1fp-actions-bar a.f1fp-btn{ width:100%; }
+}
+
+/* --- Privacy Confirm & Password Reset Wrapper (f1pr) --- */
+:root{
+  --card:#FFFFFF; --text:#111111; --head:#202020; --accent:#E00078; --muted:rgba(17,17,17,.65); --line:rgba(0,0,0,.10);
+}
+body{
+  margin:0; background:#f6f6f6; color:var(--text); font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: geometricPrecision;
+}
+
+/* Reusing .f1fp-wrap styles for standalone pages where possible, or defining f1pr specific if unique */
+/* The standalone pages had their own inline styles in legacy code with .f1pr- prefixes. Merging here. */
+
+.f1pr-wrap{ max-width: 860px; margin: 24px auto; padding: 0 14px; }
+.f1pr-wrap *{ box-sizing:border-box; }
+
+.f1pr-card{ background: var(--card); border-radius: 0 !important; box-shadow:0 10px 26px rgba(0,0,0,.06); position:relative; overflow:hidden; }
+.f1pr-card::before{ content:""; position:absolute; top:0; left:0; right:0; height:52px; background: var(--head); }
+.f1pr-card::after{ content:""; position:absolute; top:48px; left:0; right:0; height:4px; background: var(--accent); }
+.f1pr-card > *{ position:relative; z-index:2; }
+
+.f1pr-head{ min-height:52px; display:flex; align-items:center; padding: 0 16px; }
+.f1pr-head__title{ margin:0 !important; font-size: .875rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color:#fff; line-height: 1.2; padding-bottom: 1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.f1pr-body{ padding: 18px; }
+
+.f1pr-alert{ padding: 12px 14px; border-left: 4px solid var(--accent); background: rgba(0,0,0,.03); font-weight: 700; color: var(--text); font-size: .9375rem; line-height: 1.35; padding-bottom: 1px; }
+.f1pr-alert--error{ border-left-color: #b00020; }
+.f1pr-alert ul{ margin: 8px 0 0 18px; }
+
+.f1pr-muted{ color: var(--muted); font-weight:600; margin: 0; }
+
+.f1pr-form{ margin-top: 12px; display:flex; flex-direction:column; gap: 12px; }
+.f1pr-row{ display:flex; flex-direction:column; gap:6px; }
+
+.f1pr-label{ font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: rgba(17,17,17,.65); line-height: 1.2; padding-bottom: 1px; }
+.f1pr-input{ width:100%; padding: 10px 12px; border-radius: 0 !important; border: 1px solid rgba(0,0,0,.12); background: #fff; font-size: .875rem; font-weight: 700; line-height: 1.2; color: var(--text); outline: none; }
+.f1pr-input:focus{ border-color: var(--accent); box-shadow: 0 0 0 3px rgba(224,0,120,.12); }
+
+.f1pr-actions{ margin-top: 14px; display:flex; gap:10px; flex-wrap:wrap; }
+.f1pr-btn{ display:inline-flex; align-items:center; justify-content:center; padding: 12px 14px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; text-decoration:none !important; border-radius: 0 !important; border: 0; cursor:pointer; user-select:none; font-size: .8125rem; line-height: 1.2; padding-bottom: calc(12px + 1px); }
+.f1pr-btn--primary{ background: var(--accent); color:#fff !important; }
+.f1pr-btn--ghost{ background: rgba(0,0,0,.03); color: var(--text) !important; }
+
+@media (max-width: 720px){
+  .f1pr-actions{ flex-direction:column; align-items:stretch; }
+  .f1pr-actions .f1pr-btn{ width:100%; }
 }
