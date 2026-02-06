@@ -1,0 +1,158 @@
+  .custom-menu-link.f1hdr-next{
+    --f1hdrAccent: #e72b99;
+    --f1hdrAccentDark: #ad2073;
+
+    --f1hdrFsBase: 14px;
+    --f1hdrFsSession: 14px;
+    --f1hdrFsCount: 14px;
+  }
+
+  .custom-menu-link.f1hdr-next > a::before,
+  .custom-menu-link.f1hdr-next > a::after{
+    content: none !important;
+    display: none !important;
+  }
+
+  .custom-menu-link.f1hdr-next{
+    height:49px !important;
+    margin:0 !important;
+    padding:0 !important;
+    display:flex !important;
+    align-items:stretch !important;
+
+    width:auto !important;
+    min-width:0 !important;
+    max-width:none !important;
+    flex: 0 0 auto !important;
+
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
+  .custom-menu-link.f1hdr-next > a{
+    display:flex !important;
+    align-items:stretch !important;
+    width:auto !important;
+    height:49px !important;
+    padding:0 !important;
+    margin:0 !important;
+
+    text-decoration:none !important;
+    box-shadow:none !important;
+    border:0 !important;
+    border-radius:0 !important;
+
+    text-align:left !important;
+
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+
+    gap:0 !important;
+  }
+
+  /* Segmente: auto-breit + Basis-Styles */
+  .custom-menu-link.f1hdr-next .f1hdr-next__seg{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    height:49px !important;
+
+    width:auto !important;
+    flex: 0 0 auto !important;
+
+    padding: 0 !important;
+
+    color:#fff !important;
+    font-weight:900;
+    font-size: var(--f1hdrFsBase);
+    letter-spacing:.06em;
+    text-transform:uppercase;
+
+    line-height: 1 !important;
+    white-space:nowrap;
+    box-sizing:border-box;
+
+    background-image:none !important;
+  }
+
+  /* LINKES Segment */
+  .custom-menu-link.f1hdr-next .f1hdr-next__seg--left{
+    padding: 0 16px !important;
+    background: none !important;
+    background-color: var(--f1hdrAccentDark) !important;
+  }
+
+  /* RECHTES Segment */
+  .custom-menu-link.f1hdr-next .f1hdr-next__seg--right{
+    padding: 0 0px !important;
+    background: none !important;
+    background-color: var(--f1hdrAccent) !important;
+    border-left:0 !important;
+  }
+
+  .custom-menu-link.f1hdr-next > a:hover .f1hdr-next__seg{
+    filter: brightness(1.0);
+  }
+
+  .custom-menu-link.f1hdr-next .f1hdr-next__leftwrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    height:100%;
+  }
+
+  .custom-menu-link.f1hdr-next .f1hdr-next__flag{
+    width:20px;
+    height:12px;
+    object-fit:cover;
+    display:block;
+    border:1px solid rgba(255,255,255,.55);
+    border-radius:0;
+    flex:0 0 auto;
+  }
+
+  .custom-menu-link.f1hdr-next .f1hdr-next__session{
+    display:block;
+    font-size: var(--f1hdrFsSession);
+    letter-spacing:.08em;
+    transform:none !important;
+  }
+
+  .custom-menu-link.f1hdr-next .f1hdr-next__count{
+    display:block;
+    font-size: var(--f1hdrFsCount);
+    letter-spacing:.06em;
+
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+
+    transform:none !important;
+    text-transform: uppercase !important;
+  }
+
+  /* Desktop: feste Mindestbreite für den Countdown-Text => Box springt nicht */
+  @media (min-width: 521px){
+    .custom-menu-link.f1hdr-next .f1hdr-next__count{
+      min-width: 18ch !important;
+      text-align: center !important;
+    }
+  }
+
+  @media (max-width: 520px){
+    .custom-menu-link.f1hdr-next{
+      --f1hdrFsBase: 14px;
+      --f1hdrFsSession: 14px;
+      --f1hdrFsCount: 14px;
+    }
+
+    /* Mobile: eigener Padding pro Box */
+    .custom-menu-link.f1hdr-next .f1hdr-next__seg--left{
+      padding: 0 16px !important;
+    }
+    .custom-menu-link.f1hdr-next .f1hdr-next__seg--right{
+      padding: 0 16px !important;
+    }
+  }
