@@ -62,6 +62,7 @@ require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-teams.php';
 require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-drivers.php';
 require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-calendar.php';
 require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-theme-tweaks.php';
+require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-footer.php';
 
 // ==========================================================================
 // 3. INITIALIZATION
@@ -77,6 +78,7 @@ function f1_manager_suite_init() {
     new F1_Drivers();
     new F1_Manager_Calendar();
     new F1_Theme_Tweaks();
+    new F1_Footer();
 }
 add_action( 'plugins_loaded', 'f1_manager_suite_init' );
 
