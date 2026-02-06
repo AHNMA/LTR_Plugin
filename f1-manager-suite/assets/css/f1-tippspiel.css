@@ -1,495 +1,650 @@
+
+/* =========================================================
+   F1 TIPPSPIEL MAIN CSS
+   ========================================================= */
 .f1tips-wrap{
-  --card:#FFFFFF; --text:#111111; --head:#202020; --accent:#E00078; --muted:rgba(0,0,0,.65);
-  --line: rgba(0,0,0,.08);
+    --card: #FFFFFF;
+    --ink: #202020;
+    --accent: #E00078;
+    --text: #111111;
+    --muted: rgba(0,0,0,.65);
+    --line: rgba(0,0,0,.08);
 
-  --tblHeadBg: rgba(0,0,0,.03);
-  --tblHeadText: #111;
-  --tblRowAlt: rgba(0,0,0,.015);
+    --tblHeadBg: rgba(0,0,0,.03);
+    --tblHeadText: #111;
+    --tblRowAlt: rgba(0,0,0,.015);
 
-  color: var(--text);
-  font-size: 14px;
-  line-height: 1.45;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: geometricPrecision;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: geometricPrecision;
 }
 .f1tips-wrap *{ box-sizing:border-box; }
 
 .f1tips-canvas{ background: transparent; padding: 0; border-radius: 0; }
 
 .f1tips-card{
-  position:relative;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 0;
-  overflow:hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    position:relative;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 0;
+    overflow:hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06);
 }
 
 /* HEAD: dunkel + Akzentleiste unten */
 .f1tips-head{
-  background: #202020 !important;
-  color: #fff !important;
+    background: #202020 !important;
+    color: #fff !important;
 
-  padding: 12px 14px;
-  min-height: 47px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 12px;
+    padding: 12px 14px;
+    min-height: 47px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
 
-  border-bottom: 0 !important;
-  box-shadow: inset 0 -4px 0 var(--accent);
+    border-bottom: 0 !important;
+    box-shadow: inset 0 -4px 0 var(--accent);
 }
 .f1tips-head .title{
-  font-weight: 900;
-  letter-spacing: .02em;
-  font-size: 14px;
-  color: #fff !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: .02em;
+    font-size: 14px;
+    color: #fff !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
 }
 .f1tips-head .f1tips-mut{
-  color: rgba(255,255,255,.75) !important;
+    color: rgba(255,255,255,.75) !important;
 }
 
 .f1tips-body{ padding: 12px 14px 14px; }
 
 .f1tips-note{
-  padding: 10px 12px;
-  border-radius: 0;
-  background: rgba(224,0,120,.08);
-  border: 1px solid rgba(224,0,120,.18);
-  font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 0;
+    background: rgba(224,0,120,.08);
+    border: 1px solid rgba(224,0,120,.18);
+    font-size: 13px;
 }
 .f1tips-mut{ color: var(--muted); font-size: 13px; }
 
 .f1tips-select{
-  width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 0;
-  padding: 8px 10px;
-  background: #fff;
-  outline: none;
-  font-size: 13px;
-  line-height: 1.2;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 0;
+    padding: 8px 10px;
+    background: #fff;
+    outline: none;
+    font-size: 13px;
+    line-height: 1.2;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Buttons */
+/* HARD FIX: Buttons */
 .f1tips-wrap .f1tips-btn{
-  -webkit-appearance: none !important;
-  appearance: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
 
-  font: inherit !important;
-  font-weight: 900 !important;
-  font-size: 11px !important;
+    font: inherit !important;
+    font-weight: 900 !important;
+    font-size: 11px !important;
 
-  line-height: normal !important;
-  letter-spacing: .2px;
+    line-height: normal !important;
+    letter-spacing: .2px;
 
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-  padding: 11px 12px !important;
-  min-height: 42px !important;
-  height: auto !important;
+    padding: 11px 12px !important;
+    min-height: 42px !important;
+    height: auto !important;
 
-  overflow: visible !important;
-  box-sizing: border-box !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
 
-  border-radius: 0;
-  border: 1px solid rgba(0,0,0,.12);
-  background: #fff;
-  color: var(--text) !important;
+    border-radius: 0;
+    border: 1px solid rgba(0,0,0,.12);
+    background: #fff;
+    color: var(--text) !important;
 
-  gap: 8px;
-  white-space: nowrap;
-  text-decoration: none;
-  vertical-align: middle;
-  cursor:pointer;
+    gap: 8px;
+    white-space: nowrap;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor:pointer;
 }
 .f1tips-wrap .f1tips-btn:hover{ filter: brightness(0.98); }
 .f1tips-wrap .f1tips-btn:disabled{ opacity:.55; cursor:not-allowed; }
 
 .f1tips-wrap .f1tips-btn .f1tips-btn-label{
-  position: relative;
-  top: 0px;
-  line-height: normal !important;
+    position: relative;
+    top: 0px;
+    line-height: normal !important;
 }
 
 .f1tips-wrap .f1tips-btn-primary{
-  background: var(--accent) !important;
-  color:#fff !important;
-  border-color: rgba(0,0,0,0) !important;
+    background: var(--accent) !important;
+    color:#fff !important;
+    border-color: rgba(0,0,0,0) !important;
 }
 
+/* NEU: sicher ausblenden */
 .f1tips-wrap .f1tips-btn.f1tips-hidden{
-  display: none !important;
+    display: none !important;
 }
 
 /* Status-Indikator */
 .f1tips-state{
-  display:inline-flex;
-  align-items:center;
-  gap: 8px;
-  font-weight: 900;
-  letter-spacing: .02em;
-  white-space: nowrap;
+    display:inline-flex;
+    align-items:center;
+    gap: 8px;
+    font-weight: 900;
+    letter-spacing: .02em;
+    white-space: nowrap;
 }
 .f1tips-state::before{
-  content:'';
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.35);
-  box-shadow: 0 0 0 1px rgba(255,255,255,.25);
-  flex: 0 0 auto;
+    content:'';
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.35);
+    box-shadow: 0 0 0 1px rgba(255,255,255,.25);
+    flex: 0 0 auto;
 }
 .f1tips-state[data-state=open]::before{
-  background: #22c55e;
-  box-shadow: 0 0 0 1px rgba(34,197,94,.35);
+    background: #22c55e; /* grün */
+    box-shadow: 0 0 0 1px rgba(34,197,94,.35);
 }
 .f1tips-state[data-state=closed]::before{
-  background: #ef4444;
-  box-shadow: 0 0 0 1px rgba(239,68,68,.35);
+    background: #ef4444; /* rot */
+    box-shadow: 0 0 0 1px rgba(239,68,68,.35);
 }
 .f1tips-state[data-state=result]::before{
-  background: var(--accent);
-  box-shadow: 0 0 0 1px rgba(224,0,120,.35);
+    background: var(--accent);
+    box-shadow: 0 0 0 1px rgba(224,0,120,.35);
 }
 
+/* Zurück als Textlink */
 .f1tips-backlink{
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  border: 0;
-  padding: 0;
-  margin: 0;
-  color: #fff !important;
-  font: inherit;
-  font-weight: 900;
-  font-size: 12px;
-  letter-spacing: .02em;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  line-height: 1;
-  text-decoration: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    color: #fff !important;
+    font: inherit;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: .02em;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1;
+    text-decoration: none;
 }
 .f1tips-backlink:hover{ opacity: .9; }
 
 .f1tips-user{ display:flex; align-items:center; gap:10px; }
 .f1tips-user img{ width:32px; height:32px; border-radius: 0; }
 
+/* Avatar in Spielerübersicht */
 .f1tips-avatar{
-  width: 38px;
-  height: 38px;
-  border-radius: 0;
-  display:block;
-  object-fit: cover;
-  border: 1px solid rgba(0,0,0,.10);
-  background: rgba(0,0,0,.03);
+    width: 38px;
+    height: 38px;
+    border-radius: 0;
+    display:block;
+    object-fit: cover;
+    border: 1px solid rgba(0,0,0,.10);
+    background: rgba(0,0,0,.03);
 }
 
 .f1tips-pill{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding: 2px 6px;
-  border: 1px solid rgba(0,0,0,.10);
-  background: rgba(0,0,0,.03);
-  font-weight: 900;
-  font-size: 11px;
-  border-radius: 0;
-  white-space: nowrap;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding: 2px 6px;
+    border: 1px solid rgba(0,0,0,.10);
+    background: rgba(0,0,0,.03);
+    font-weight: 900;
+    font-size: 11px;
+    border-radius: 0;
+    white-space: nowrap;
 }
 
+/* Default: Punkte als pinke Box + schwarze Schrift */
 .f1tips-points{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding: 2px 6px;
-  border: 1px solid rgba(224,0,120,.22);
-  background: rgba(224,0,120,.08);
-  color: #111111;
-  font-weight: 900;
-  font-size: 11px;
-  border-radius: 0;
-  white-space: nowrap;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding: 2px 6px;
+    border: 1px solid rgba(224,0,120,.22);
+    background: rgba(224,0,120,.08);
+    color: #111111;
+    font-weight: 900;
+    font-size: 11px;
+    border-radius: 0;
+    white-space: nowrap;
 }
 
+/* Head: Punkte nur als Text (keine Box) */
 .f1tips-head .f1tips-points{
-  display: inline;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: rgba(255,255,255,.75);
-  font-weight: 900;
+    display: inline;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgba(255,255,255,.75);
+    font-weight: 900;
 }
 
 .f1tips-bonus-small .f1tips-points{ color:#111111; }
 
+/* --- Layout --- */
 .f1tips-grid-top{
-  display:grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap: 12px;
-  align-items: stretch;
-  margin-bottom: 14px;
+    display:grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 12px;
+    align-items: stretch;
+    margin-bottom: 14px;
 }
 .f1tips-stack{ display:grid; grid-template-rows:auto auto; gap:12px; }
 
+/* rechte Spalte besteht aus 2 Karten untereinander */
 .f1tips-side{
-  display: grid;
-  grid-template-rows: auto auto;
-  gap: 12px;
-  align-content: start;
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 12px;
+    align-content: start;
 }
 
 .f1tips-playergrid{ display:grid; grid-template-columns: 1fr; }
 .f1tips-playergrid .kv{
-  display:grid;
-  grid-template-columns: 220px 1fr;
-  gap: 12px;
-  padding: 10px 0;
-  border-top: 1px solid var(--line);
-  align-items: center;
+    display:grid;
+    grid-template-columns: 220px 1fr;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+    align-items: center;
 }
 .f1tips-playergrid .kv:first-child{ border-top:0; }
 .f1tips-playergrid .k{ font-weight:900; font-size:12px; letter-spacing:.2px; }
 .f1tips-playergrid .v{ font-weight:800; font-size:13px; }
 
 .f1tips-weekendbar{
-  display:grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  align-items:center;
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    align-items:center;
 }
 
 .f1tips-sessions{
-  display:grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin-bottom: 14px;
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
 }
 .f1tips-session{
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 0;
-  overflow:hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 0;
+    overflow:hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06);
 }
 
 .f1tips-picks-grid{
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
 }
 
 .f1tips-list{ width:100%; }
 .f1tips-list-head{
-  display:grid;
-  gap: 10px;
-  padding: 10px 10px;
-  background: var(--tblHeadBg);
-  color: var(--tblHeadText);
-  font-weight: 900;
-  font-size: 11px;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  text-transform: uppercase;
-  letter-spacing: .05em;
+    display:grid;
+    gap: 10px;
+    padding: 10px 10px;
+    background: var(--tblHeadBg);
+    color: var(--tblHeadText);
+    font-weight: 900;
+    font-size: 11px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    text-transform: uppercase;
+    letter-spacing: .05em;
 }
 .f1tips-list-body{ display:block; }
 .f1tips-list-row{
-  display:grid;
-  gap: 10px;
-  padding: 9px 10px;
-  border-top: 1px solid var(--line);
-  align-items:center;
-  font-size: 13px;
+    display:grid;
+    gap: 10px;
+    padding: 9px 10px;
+    border-top: 1px solid var(--line);
+    align-items:center;
+    font-size: 13px;
 }
 .f1tips-list-row:nth-child(even){ background: var(--tblRowAlt); }
 
 .f1tips-list-others .f1tips-list-head,
 .f1tips-list-others .f1tips-list-row{
-  grid-template-columns: 38% 14% 1fr;
-  align-items: start;
+    grid-template-columns: 38% 14% 1fr;
+    align-items: start;
 }
 
 .f1tips-list-scroll25 .f1tips-list-body{
-  max-height: 760px;
-  overflow: auto;
+    max-height: 760px;
+    overflow: auto;
 }
 
 .f1tips-view{ display:block; }
 .f1tips-view[hidden]{ display:none !important; }
 
 @media (max-width: 980px){
-  .f1tips-grid-top{ grid-template-columns: 1fr; }
-  .f1tips-playergrid .kv{ grid-template-columns: 1fr; gap: 6px; align-items: start; }
-  .f1tips-weekendbar{ grid-template-columns: 1fr; }
-  .f1tips-list-others .f1tips-list-head,
-  .f1tips-list-others .f1tips-list-row{ grid-template-columns: 1fr; }
-  .f1tips-picks-grid{ grid-template-columns: 1fr; }
+    .f1tips-grid-top{ grid-template-columns: 1fr; }
+    .f1tips-playergrid .kv{ grid-template-columns: 1fr; gap: 6px; align-items: start; }
+    .f1tips-weekendbar{ grid-template-columns: 1fr; }
+    .f1tips-list-others .f1tips-list-head,
+    .f1tips-list-others .f1tips-list-row{ grid-template-columns: 1fr; }
+
+    .f1tips-picks-grid{ grid-template-columns: 1fr; }
 }
 
+/* =========================
+    BONUS – Bereich
+    ========================= */
 .f1tips-bonus{
-  margin-top: 0;
-  margin-bottom: 14px;
+    margin-top: 0;
+    margin-bottom: 14px;
 }
 
 .f1tips-bonus-grid{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
 }
 
 @media (max-width: 980px){
-  .f1tips-bonus-grid{ grid-template-columns: 1fr; }
+    .f1tips-bonus-grid{ grid-template-columns: 1fr; }
 }
 
 .f1tips-bonus-q{ font-weight: 900; letter-spacing: .2px; }
 
 .f1tips-bonus-meta{
-  display:flex;
-  gap: 10px;
-  align-items:center;
-  flex-wrap:wrap;
+    display:flex;
+    gap: 10px;
+    align-items:center;
+    flex-wrap:wrap;
 }
 
 .f1tips-head .f1tips-bonus-meta .f1tips-state{
-  font-size: 13px;
-  color: rgba(255,255,255,.75);
+    font-size: 13px;
+    color: rgba(255,255,255,.75);
 }
 
+/* beide rechten Cards flexibel */
 .f1tips-side > .f1tips-card{
-  display:flex;
-  flex-direction:column;
+    display:flex;
+    flex-direction:column;
 }
 .f1tips-side > .f1tips-card .f1tips-body{
-  flex: 1 1 auto;
+    flex: 1 1 auto;
 }
 
 .f1tips-bonus-actions{
-  display:flex;
-  gap: 10px;
-  align-items:center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin-top: 10px;
+    display:flex;
+    gap: 10px;
+    align-items:center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 10px;
 }
 .f1tips-bonus-actions .f1tips-btn{ flex: 0 0 auto; }
 .f1tips-bonus-inline{
-  flex: 1 1 auto;
-  text-align: right;
-  min-width: 160px;
+    flex: 1 1 auto;
+    text-align: right;
+    min-width: 160px;
 }
 .f1tips-bonus-inline .f1tips-bonus-small{ margin-top: 0 !important; }
 @media (max-width: 980px){
-  .f1tips-bonus-inline{
-    text-align: left;
-    min-width: 0;
-    flex: 1 1 100%;
-  }
+    .f1tips-bonus-inline{
+        text-align: left;
+        min-width: 0;
+        flex: 1 1 100%;
+    }
 }
 
 .f1tips-bonus-small{
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 10px;
 }
 
+/* Session: Buttons links + Session-Punkte rechts */
 .f1tips-session-actions{
-  display:flex;
-  gap: 10px;
-  align-items:center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin-top: 10px;
+    display:flex;
+    gap: 10px;
+    align-items:center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 10px;
 }
 .f1tips-session-actions-left{
-  display:flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items:center;
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items:center;
 }
 
 .f1tips-session-pointsline{
-  margin-top: 0;
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 800;
+    margin-top: 0;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 800;
 
-  flex: 1 1 auto;
-  text-align: right;
-  min-width: 220px;
+    flex: 1 1 auto;
+    text-align: right;
+    min-width: 220px;
 }
 @media (max-width: 980px){
-  .f1tips-session-pointsline{
-    text-align: left;
-    min-width: 0;
-    flex: 1 1 100%;
-  }
+    .f1tips-session-pointsline{
+        text-align: left;
+        min-width: 0;
+        flex: 1 1 100%;
+    }
 }
 
+/* Theme-sicheres hidden */
 .f1tips-wrap [hidden]{ display:none !important; }
 
+/* Wochenend-Punkte als minimale Liste */
 .f1tips-weekendpoints{
-  --wp-row: 34px;
-  margin-top: 0;
-  display: block;
-  border-top: 1px solid var(--line);
-  min-height: calc(var(--wp-row) * 5);
+    --wp-row: 34px; /* Zeilenhöhe (min) */
+    margin-top: 0;
+    display: block;
+    border-top: 1px solid var(--line);
+    min-height: calc(var(--wp-row) * 5); /* 4 Sessions + Total */
 }
 
 .f1tips-weekendpoints .wp-item{
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
 
-  min-height: var(--wp-row);
-  padding: 8px 0;
-  border-bottom: 1px solid var(--line);
+    min-height: var(--wp-row);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
 
-  font-size: 12px;
-  font-weight: 900;
+    font-size: 12px;
+    font-weight: 900;
 }
 
+/* Unbenutzte Zeilen behalten Layout-Höhe */
 .f1tips-weekendpoints .wp-item.is-empty{
-  visibility: hidden;
-  pointer-events: none;
+    visibility: hidden;
+    pointer-events: none;
 }
 
+/* Total soll NIE unsichtbar werden */
 .f1tips-weekendpoints .wp-item.wp-total{
-  visibility: visible !important;
+    visibility: visible !important;
 }
 
 .f1tips-weekendpoints .wp-lbl{
-  color: rgba(0,0,0,.70);
-  font-weight: 900;
-  letter-spacing: .02em;
+    color: rgba(0,0,0,.70);
+    font-weight: 900;
+    letter-spacing: .02em;
 }
 
+/* Keine Pille für Punkte im Wochenend-Block */
 .f1tips-weekendpoints .f1tips-points{
-  display: inline;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: rgba(0,0,0,.70);
-  font-weight: 900;
-  white-space: nowrap;
+    display: inline;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgba(0,0,0,.70);
+    font-weight: 900;
+    white-space: nowrap;
 }
 
+/* Total leicht abheben */
 .f1tips-weekendpoints .wp-total .wp-lbl,
 .f1tips-weekendpoints .wp-total .f1tips-points{
-  color: #111;
+    color: #111;
 }
+
+/* =========================================================
+   LEADERBOARD CSS
+   ========================================================= */
+.f1tips-lb-wrap{
+    --canvas: #EEEEEE;
+    --card: #fff;
+    --head: #202020;
+    --accent: #E00078;
+    --text:#111;
+    --muted: rgba(17,17,17,.65);
+    --line: rgba(0,0,0,.08);
+    font-size:14px;
+    line-height:1.45;
+    color: var(--text);
+}
+.f1tips-lb-card{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 0;
+    overflow:hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06);
+}
+.f1tips-lb-head{
+    background: var(--head);
+    color:#fff;
+    padding: 12px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    box-shadow: inset 0 -4px 0 var(--accent);
+}
+.f1tips-lb-title{
+    font-weight: 900;
+    letter-spacing:.02em;
+    text-transform: uppercase;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
+}
+.f1tips-lb-sub{
+    color: rgba(255,255,255,.75);
+    font-weight: 800;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* KEINE Scrollbar: Body bleibt "normal" */
+.f1tips-lb-body{ padding: 0; overflow: visible; }
+
+.f1tips-lb-list-head, .f1tips-lb-row{
+    display:grid;
+    gap:10px;
+    padding: 10px 12px;
+    align-items:center;
+}
+.f1tips-lb-list-head{
+    background: rgba(0,0,0,.03);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing:.05em;
+    text-transform: uppercase;
+    color:#111;
+}
+.f1tips-lb-row{
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+}
+.f1tips-lb-row:nth-child(even){ background: rgba(0,0,0,.015); }
+
+.f1tips-lb-user{ display:flex; align-items:center; gap:10px; min-width:0; }
+.f1tips-lb-user img{ width:32px; height:32px; border-radius:0; object-fit: cover; }
+
+/* Placeholder-Avatar */
+.f1tips-lb-ava-ph{
+    width:32px;
+    height:32px;
+    border-radius:0;
+    border: 1px solid rgba(0,0,0,.10);
+    background: rgba(0,0,0,.04);
+    flex: 0 0 auto;
+}
+
+.f1tips-lb-name{ font-weight: 900; white-space:nowrap; overflow:hidden; text-overflow: ellipsis; }
+.f1tips-lb-muted{ color: var(--muted); font-size: 12px; }
+
+/* Hinweiszeile (ohne Box) */
+.f1tips-lb-info{
+    padding: 10px 12px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.f1tips-lb-points{
+    display:inline-flex;
+    align-items:center;
+    padding: 2px 6px;
+    border: 1px solid rgba(224,0,120,.22);
+    background: rgba(224,0,120,.08);
+    color:#111;
+    font-weight:900;
+    font-size:11px;
+    border-radius:0;
+    white-space:nowrap;
+    justify-self:start;
+}
+
+.f1tips-lb-cols-4 .f1tips-lb-list-head,
+.f1tips-lb-cols-4 .f1tips-lb-row{ grid-template-columns: 60px 1fr 110px 90px; }
+
+.f1tips-lb-cols-3 .f1tips-lb-list-head,
+.f1tips-lb-cols-3 .f1tips-lb-row{ grid-template-columns: 60px 1fr 110px; }
+
+@media (max-width: 640px){
+    .f1tips-lb-cols-4 .f1tips-lb-list-head,
+    .f1tips-lb-cols-4 .f1tips-lb-row{ grid-template-columns: 50px 1fr 90px 70px; }
+    .f1tips-lb-cols-3 .f1tips-lb-list-head,
+    .f1tips-lb-cols-3 .f1tips-lb-row{ grid-template-columns: 50px 1fr 90px; }
+}
+
+/* Placeholder-Row optisch etwas neutraler */
+.f1tips-lb-row.is-empty .f1tips-lb-name{ color: rgba(17,17,17,.55); }
+.f1tips-lb-row.is-empty .f1tips-lb-points{ opacity: .75; }
