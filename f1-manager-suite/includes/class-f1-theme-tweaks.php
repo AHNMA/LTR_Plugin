@@ -6,11 +6,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class F1_Theme_Tweaks {
 
-    public function __construct() {
+    private static $instance = null;
+
+    public static function get_instance() {
+        if ( self::$instance === null ) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    private function __construct() {
         // Enqueue Assets (CSS/JS)
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-        // External Links (Footer) - Kept as is, assuming it was part of previous logic or standard tweak
+        // External Links (Footer)
         add_action( 'wp_footer', array( $this, 'external_links_fix' ) );
     }
 
@@ -20,7 +29,7 @@ class F1_Theme_Tweaks {
         // 1. JS
         wp_enqueue_script(
             'f1-theme-tweaks-js',
-            plugin_dir_url( __FILE__ ) . '../assets/js/f1-theme-tweaks.js',
+            F1_MANAGER_SUITE_URL . 'assets/js/f1-theme-tweaks.js',
             array(),
             '1.0.0',
             true

@@ -9,7 +9,16 @@ class F1_Teams {
     const CAPABILITY = 'manage_f1_team_profiles';
     const NONCE_ACTION = 'f1team_nonce';
 
-    public function __construct() {
+    private static $instance = null;
+
+    public static function get_instance() {
+        if ( self::$instance === null ) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    private function __construct() {
         // Init
         add_action( 'init', array( $this, 'register_cpt' ), 0 );
         add_action( 'admin_init', array( $this, 'add_capabilities' ) );

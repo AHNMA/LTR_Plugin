@@ -6,7 +6,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class F1_Login {
 
-    public function __construct() {
+    private static $instance = null;
+
+    public static function get_instance() {
+        if ( self::$instance === null ) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    private function __construct() {
         // Init Hooks
         add_action( 'init', array( $this, 'init_login_logic' ), 1 );
         add_action( 'login_init', array( $this, 'redirect_wp_login' ), 1 );
@@ -17,6 +26,9 @@ class F1_Login {
         add_filter( 'lostpassword_url', array( $this, 'custom_lostpassword_url' ), 10, 2 );
         add_filter( 'login_redirect', array( $this, 'custom_login_redirect' ), 10, 3 );
         add_filter( 'get_avatar_url', array( $this, 'google_avatar_url' ), 10, 3 );
+
+        // Prevent login for pending users
+        add_filter( 'wp_authenticate_user', array( $this, 'check_active_status' ), 10, 2 );
 
         // AJAX Handlers
         add_action( 'wp_ajax_nopriv_f1_login', array( $this, 'ajax_login' ) );
@@ -35,32 +47,83 @@ class F1_Login {
 
         // Shortcode
         add_shortcode( 'f1_login_button', array( $this, 'render_shortcode' ) );
+
+        // Query Vars for Activation
+        add_filter( 'query_vars', array( $this, 'add_query_vars' ) );
+    }
+
+    public function add_query_vars( $vars ) {
+        $vars[] = 'f1_activate';
+        $vars[] = 'f1_key';
+        return $vars;
     }
 
     public function enqueue_assets() {
         if ( is_admin() ) return;
 
-        wp_enqueue_style( 'f1-login', plugin_dir_url( __FILE__ ) . '../assets/css/f1-login.css', array(), '1.0.0' );
+        wp_enqueue_style( 'f1-login', F1_MANAGER_SUITE_URL . 'assets/css/f1-login.css', array(), '1.0.0' );
         wp_enqueue_script( 'turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit', array(), null, true );
-        wp_enqueue_script( 'f1-login', plugin_dir_url( __FILE__ ) . '../assets/js/f1-login.js', array(), '1.0.0', true );
+        wp_enqueue_script( 'f1-login', F1_MANAGER_SUITE_URL . 'assets/js/f1-login.js', array(), '1.0.0', true );
 
         wp_localize_script( 'f1-login', 'f1_login_vars', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             'google_auth_url' => home_url( '/?bp_social_auth=google' ),
         ));
 
-        // Pass Messages to Window (legacy support)
+        // Pass Messages to Window
         wp_add_inline_script( 'f1-login', 'window.BP_ACC_MSG = ' . wp_json_encode( self::get_message_map(), JSON_UNESCAPED_UNICODE ) . ';', 'before' );
     }
 
     public function init_login_logic() {
+        // Activation Handler
+        if ( get_query_var( 'f1_activate' ) && get_query_var( 'f1_key' ) ) {
+            $this->handle_activation();
+        }
+
         if ( is_admin() && ! defined( 'DOING_AJAX' ) ) return;
         if ( is_user_logged_in() ) return;
 
-        // Handle Registration
+        // Handle Registration POST
         if ( ! empty( $_POST['bp_acc_action'] ) && $_POST['bp_acc_action'] === 'register' ) {
             $this->handle_registration();
         }
+    }
+
+    private function handle_activation() {
+        $uid = (int) get_query_var( 'f1_activate' );
+        $key = get_query_var( 'f1_key' );
+
+        $u = get_user_by( 'id', $uid );
+        if ( ! $u ) {
+            wp_die( 'Ungültiger Aktivierungslink.', 'Fehler', array( 'response' => 400 ) );
+        }
+
+        $pending = get_user_meta( $uid, '_f1_activation_pending', true );
+        if ( ! $pending ) {
+            // Already active
+            wp_safe_redirect( add_query_arg( 'msg', 'already_active', home_url( '/' ) ) );
+            exit;
+        }
+
+        if ( $pending !== $key ) {
+            wp_die( 'Ungültiger Aktivierungscode.', 'Fehler', array( 'response' => 403 ) );
+        }
+
+        delete_user_meta( $uid, '_f1_activation_pending' );
+        wp_set_current_user( $uid );
+        wp_set_auth_cookie( $uid, true );
+        do_action( 'wp_login', $u->user_login, $u );
+
+        wp_safe_redirect( self::get_profile_url() );
+        exit;
+    }
+
+    private function check_password_strength( $password ) {
+        if ( strlen( $password ) < 8 ) return 'Passwort zu kurz (min. 8 Zeichen).';
+        if ( ! preg_match( '/[A-Z]/', $password ) ) return 'Passwort muss Großbuchstaben enthalten.';
+        if ( ! preg_match( '/[a-z]/', $password ) ) return 'Passwort muss Kleinbuchstaben enthalten.';
+        if ( ! preg_match( '/[0-9]/', $password ) ) return 'Passwort muss Zahlen enthalten.';
+        return true;
     }
 
     private function handle_registration() {
@@ -103,8 +166,9 @@ class F1_Login {
             $GLOBALS['bp_acc_reg_errors'][] = self::msg( 'reg.email_taken', 'E-Mail vergeben.' );
         }
 
-        if ( empty( $pass1 ) || strlen( $pass1 ) < 8 ) {
-            $GLOBALS['bp_acc_reg_errors'][] = self::msg( 'reg.pass_min', 'Passwort zu kurz.' );
+        $pw_check = $this->check_password_strength( $pass1 );
+        if ( $pw_check !== true ) {
+            $GLOBALS['bp_acc_reg_errors'][] = $pw_check;
         } elseif ( $pass1 !== $pass2 ) {
             $GLOBALS['bp_acc_reg_errors'][] = self::msg( 'reg.pass_mismatch', 'Passwörter stimmen nicht überein.' );
         }
@@ -121,12 +185,27 @@ class F1_Login {
             return;
         }
 
-        wp_update_user( array( 'ID' => $user_id, 'display_name' => $username ) );
-        wp_set_current_user( $user_id );
-        wp_set_auth_cookie( $user_id, true );
-        do_action( 'wp_login', $username, get_user_by( 'id', $user_id ) );
-        wp_safe_redirect( self::get_profile_url() );
-        exit;
+        // Double Opt-In
+        $activation_key = wp_generate_password( 32, false );
+        update_user_meta( $user_id, '_f1_activation_pending', $activation_key );
+
+        // Send Email
+        $link = add_query_arg( array( 'f1_activate' => $user_id, 'f1_key' => $activation_key ), home_url( '/' ) );
+        $subject = 'Aktivierung deines Accounts';
+        $message = "Hallo $username,\n\nBitte klicke auf folgenden Link, um deinen Account zu aktivieren:\n\n$link\n\nDein F1 Manager Team";
+        wp_mail( $email, $subject, $message );
+
+        // Show Success Message (using reg_errors to pass msg, hacky but simple for now without dedicated UI msg slot)
+        $GLOBALS['bp_acc_reg_success'] = 'Registrierung erfolgreich! Bitte überprüfe deine E-Mails zur Aktivierung.';
+        $GLOBALS['bp_acc_reg_values'] = array(); // Clear form
+    }
+
+    public function check_active_status( $user, $password ) {
+        if ( is_wp_error( $user ) ) return $user;
+        if ( get_user_meta( $user->ID, '_f1_activation_pending', true ) ) {
+            return new WP_Error( 'activation_pending', 'Bitte erst Account aktivieren (E-Mail prüfen).' );
+        }
+        return $user;
     }
 
     public function redirect_wp_login() {
@@ -273,6 +352,10 @@ class F1_Login {
             }
 
             update_user_meta( $user_id, 'bp_google_id', $google_id );
+
+            // Auto-activate google users since email is verified by google
+            delete_user_meta( $user_id, '_f1_activation_pending' );
+
             wp_set_current_user( $user_id );
             wp_set_auth_cookie( $user_id, true );
             do_action( 'wp_login', $user ? $user->user_login : $username, get_user_by( 'ID', $user_id ) );
@@ -541,6 +624,7 @@ class F1_Login {
         $default_tab = ( ! empty( $GLOBALS['bp_acc_reg_errors'] ) ) ? 'register' : 'login';
         $reg_errors = $GLOBALS['bp_acc_reg_errors'] ?? [];
         $reg_vals = $GLOBALS['bp_acc_reg_values'] ?? [];
+        $reg_success = $GLOBALS['bp_acc_reg_success'] ?? '';
 
         $profile_url = self::get_profile_url();
         $logout_url = wp_logout_url( home_url( '/' ) );
@@ -552,7 +636,7 @@ class F1_Login {
         $agb_url = home_url( '/agb/' );
 
         ?>
-        <div class="bp-account" data-bp-account data-bp-default-tab="<?php echo esc_attr($default_tab); ?>" data-bp-auto-open="<?php echo !empty($reg_errors) ? '1' : '0'; ?>">
+        <div class="bp-account" data-bp-account data-bp-default-tab="<?php echo esc_attr($default_tab); ?>" data-bp-auto-open="<?php echo (!empty($reg_errors) || !empty($reg_success)) ? '1' : '0'; ?>">
             <div class="bp-account__panel" role="dialog" aria-label="Account" data-bp-account-panel>
                 <div class="bp-account__header">
                     <div class="bp-account__title"><?php echo is_user_logged_in() ? esc_html(self::msg('ui.title_logged_in')) : esc_html(self::msg('ui.title_logged_out')); ?></div>
@@ -629,11 +713,19 @@ class F1_Login {
                                     <button class="bp-account__tab" type="button" data-bp-acc-switch="login"><?php echo esc_html(self::msg('ui.btn_back_to_login')); ?></button>
                                 </div>
                             <?php else : ?>
+                                <?php if ( ! empty($reg_success) ) : ?>
+                                    <div class="bp-account__msg bp-account__msg--ok">
+                                        <?php echo esc_html($reg_success); ?>
+                                    </div>
+                                <?php endif; ?>
+
                                 <?php if ( ! empty($reg_errors) ) : ?>
                                     <div class="bp-account__msg bp-account__msg--err">
                                         <ul><?php foreach ($reg_errors as $e) echo '<li>' . esc_html($e) . '</li>'; ?></ul>
                                     </div>
                                 <?php endif; ?>
+
+                                <?php if ( empty($reg_success) ) : ?>
                                 <form method="post" action="">
                                     <p class="bp-acc-field">
                                         <span class="bp-acc-labelRow">
@@ -675,6 +767,7 @@ class F1_Login {
                                         <button class="bp-account__tab" type="button" data-bp-acc-switch="login"><?php echo esc_html(self::msg('ui.btn_back_to_login')); ?></button>
                                     </div>
                                 </form>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>

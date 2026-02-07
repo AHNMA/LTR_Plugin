@@ -50,9 +50,6 @@ if ( ! defined( 'F1TIPS_DB_VER' ) ) {
 // 2. INCLUDE CLASSES
 // ==========================================================================
 
-// Helper
-require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-assets.php';
-
 // Modules
 require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-login.php';
 require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-profile.php';
@@ -73,20 +70,19 @@ require_once F1_MANAGER_SUITE_PATH . 'includes/class-f1-ticker.php';
 // ==========================================================================
 
 function f1_manager_suite_init() {
-    new F1_Assets();
-    new F1_Login();
-    new F1_Profile();
-    new F1_Tippspiel();
-    new F1_WM_Stand();
-    new F1_Teams();
-    new F1_Drivers();
-    new F1_Manager_Calendar();
-    new F1_Theme_Tweaks();
-    new F1_Footer();
-    new F1_Logo_Switcher();
-    new F1_Countdown();
-    new F1_Team_Overview();
-    new F1_Ticker();
+    F1_Login::get_instance();
+    F1_Profile::get_instance();
+    F1_Tippspiel::get_instance();
+    F1_WM_Stand::get_instance();
+    F1_Teams::get_instance();
+    F1_Drivers::get_instance();
+    F1_Manager_Calendar::get_instance();
+    F1_Theme_Tweaks::get_instance();
+    F1_Footer::get_instance();
+    F1_Logo_Switcher::get_instance();
+    F1_Countdown::get_instance();
+    F1_Team_Overview::get_instance();
+    F1_Ticker::get_instance();
 }
 add_action( 'plugins_loaded', 'f1_manager_suite_init' );
 
