@@ -62,13 +62,18 @@ class F1_Login {
         if ( is_admin() ) return;
 
         wp_enqueue_style( 'f1-login', F1_MANAGER_SUITE_URL . 'assets/css/f1-login.css', array(), '1.0.0' );
-        wp_enqueue_script( 'turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit', array(), null, true );
+        if ( defined( 'BP_ACC_TURNSTILE_SITEKEY' ) ) {
+            wp_enqueue_script( 'turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit', array(), null, true );
+        }
         wp_enqueue_script( 'f1-login', F1_MANAGER_SUITE_URL . 'assets/js/f1-login.js', array(), '1.0.0', true );
 
-        wp_localize_script( 'f1-login', 'f1_login_vars', array(
+        $vars = array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'google_auth_url' => home_url( '/?bp_social_auth=google' ),
-        ));
+        );
+        if ( defined( 'BP_SOCIAL_GOOGLE_CLIENT_ID' ) && defined( 'BP_SOCIAL_GOOGLE_CLIENT_SECRET' ) ) {
+            $vars['google_auth_url'] = home_url( '/?bp_social_auth=google' );
+        }
+        wp_localize_script( 'f1-login', 'f1_login_vars', $vars );
 
         // Pass Messages to Window
         wp_add_inline_script( 'f1-login', 'window.BP_ACC_MSG = ' . wp_json_encode( self::get_message_map(), JSON_UNESCAPED_UNICODE ) . ';', 'before' );
@@ -258,6 +263,10 @@ class F1_Login {
         // A) Callback
         if ( isset( $_GET['code'], $_GET['state'] ) && isset( $_GET['bp_social_auth'] ) && $_GET['bp_social_auth'] === 'google' ) {
 
+            if ( ! defined( 'BP_SOCIAL_GOOGLE_CLIENT_ID' ) || ! defined( 'BP_SOCIAL_GOOGLE_CLIENT_SECRET' ) ) {
+                wp_die( 'Google Login ist nicht konfiguriert.' );
+            }
+
             if ( ! wp_verify_nonce( $_GET['state'], 'bp_social_google_login' ) ) {
                 wp_die( 'Sicherheitsprüfung fehlgeschlagen (Invalid State).' );
             }
@@ -365,6 +374,11 @@ class F1_Login {
 
         // B) Start
         if ( isset( $_GET['bp_social_auth'] ) && $_GET['bp_social_auth'] === 'google' ) {
+
+            if ( ! defined( 'BP_SOCIAL_GOOGLE_CLIENT_ID' ) ) {
+                wp_die( 'Google Login ist nicht konfiguriert.' );
+            }
+
             $mode = isset( $_GET['mode'] ) ? $_GET['mode'] : '';
             if ( is_user_logged_in() && $mode !== 'connect' ) {
                 wp_safe_redirect( home_url( '/' ) );
@@ -416,6 +430,10 @@ class F1_Login {
     }
 
     public static function turnstile_verify( $token, $action = '' ) {
+        if ( ! defined( 'BP_ACC_TURNSTILE_SECRET' ) || ! defined( 'BP_ACC_TURNSTILE_SITEKEY' ) ) {
+            return true; // Skip verification if not configured
+        }
+
         $token = trim( (string) $token );
         if ( $token === '' ) return new WP_Error( 'turnstile_missing', self::msg( 'turnstile.missing' ) );
 
@@ -631,7 +649,10 @@ class F1_Login {
         $can_register = get_option( 'users_can_register' );
         $current_user = wp_get_current_user();
         $display_name = $current_user->exists() ? $current_user->display_name : '';
-        $ts_sitekey = BP_ACC_TURNSTILE_SITEKEY;
+
+        $ts_enabled = ( defined( 'BP_ACC_TURNSTILE_SITEKEY' ) && defined( 'BP_ACC_TURNSTILE_SECRET' ) );
+        $ts_sitekey = $ts_enabled ? BP_ACC_TURNSTILE_SITEKEY : '';
+
         $privacy_url = home_url( '/datenschutz/' );
         $agb_url = home_url( '/agb/' );
 
@@ -671,9 +692,11 @@ class F1_Login {
                                     <label><input type="checkbox" name="bp_login_remember" value="1" /> <?php echo esc_html(self::msg('ui.label_remember')); ?></label>
                                 </p>
                                 <?php wp_nonce_field('f1_login', 'bp_acc_login_nonce'); ?>
+                                <?php if ( $ts_enabled ) : ?>
                                 <div class="bp-acc-turnstile">
                                     <div class="bp-turnstile" data-sitekey="<?php echo esc_attr($ts_sitekey); ?>" data-action="login" data-response-field-name="ts_login"></div>
                                 </div>
+                                <?php endif; ?>
                                 <button class="bp-account__btnPrimary" type="submit" data-bp-login-submit><?php echo esc_html(self::msg('ui.btn_login')); ?></button>
 
                                 <div class="bp-account__tabs">
@@ -695,9 +718,11 @@ class F1_Login {
                                     <input type="text" id="bp_lost_user" name="bp_lost_user" autocomplete="username email" required />
                                 </p>
                                 <?php wp_nonce_field('f1_lostpass', 'bp_acc_lostpass_nonce'); ?>
+                                <?php if ( $ts_enabled ) : ?>
                                 <div class="bp-acc-turnstile">
                                     <div class="bp-turnstile" data-sitekey="<?php echo esc_attr($ts_sitekey); ?>" data-action="lost" data-response-field-name="ts_lost"></div>
                                 </div>
+                                <?php endif; ?>
                                 <button class="bp-account__btnPrimary" type="submit" data-bp-lost-submit><?php echo esc_html(self::msg('ui.btn_lost_submit')); ?></button>
                                 <div class="bp-account__tabs">
                                     <button class="bp-account__tab" type="button" data-bp-acc-switch="login"><?php echo esc_html(self::msg('ui.btn_back_to_login')); ?></button>
@@ -759,9 +784,11 @@ class F1_Login {
                                     <input type="hidden" name="bp_acc_action" value="register" />
                                     <?php wp_nonce_field('bp_acc_register', 'bp_acc_reg_nonce'); ?>
                                     <?php wp_nonce_field('f1_reg_check', 'bp_acc_regcheck_nonce'); ?>
+                                    <?php if ( $ts_enabled ) : ?>
                                     <div class="bp-acc-turnstile">
                                         <div class="bp-turnstile" data-sitekey="<?php echo esc_attr($ts_sitekey); ?>" data-action="register" data-response-field-name="ts_register"></div>
                                     </div>
+                                    <?php endif; ?>
                                     <button class="bp-account__btnPrimary bp-account__btnRegister" type="submit"><?php echo esc_html(self::msg('ui.reg_btn_submit')); ?></button>
                                     <div class="bp-account__tabs">
                                         <button class="bp-account__tab" type="button" data-bp-acc-switch="login"><?php echo esc_html(self::msg('ui.btn_back_to_login')); ?></button>

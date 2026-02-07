@@ -20,25 +20,9 @@ define( 'F1_MANAGER_SUITE_VERSION', '1.0.0' );
 // 1. CONFIGURATION CONSTANTS (Overridable in wp-config.php)
 // ==========================================================================
 
-/* Cloudflare Turnstile */
-if ( ! defined( 'BP_ACC_TURNSTILE_SITEKEY' ) ) {
-    define( 'BP_ACC_TURNSTILE_SITEKEY', '0x4AAAAAACVvfx4JCGwLy55a' );
-}
-if ( ! defined( 'BP_ACC_TURNSTILE_SECRET' ) ) {
-    define( 'BP_ACC_TURNSTILE_SECRET', '0x4AAAAAACVvf7P05QtbJ4J-c_Q0Jfe20Kg' );
-}
-
 /* Rate Limit Settings */
 if ( ! defined( 'BP_LOSTPASS_RL_SECONDS' ) ) {
     define( 'BP_LOSTPASS_RL_SECONDS', 60 );
-}
-
-/* Social Login - Google */
-if ( ! defined( 'BP_SOCIAL_GOOGLE_CLIENT_ID' ) ) {
-    define( 'BP_SOCIAL_GOOGLE_CLIENT_ID', '164843719829-lehr73n8jq1prcsf44cbn3luorj24qt7.apps.googleusercontent.com' );
-}
-if ( ! defined( 'BP_SOCIAL_GOOGLE_CLIENT_SECRET' ) ) {
-    define( 'BP_SOCIAL_GOOGLE_CLIENT_SECRET', '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' );
 }
 
 /* Database Version for Tippspiel */
