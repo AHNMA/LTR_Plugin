@@ -1,7 +1,6 @@
-(function(){
-    if (document.querySelector('[data-bp-account]')) return;
-
+  (function(){
     var BP_ACC_MSG = window.BP_ACC_MSG || {};
+    var CFG = window.f1_login_vars || {};
 
     function msg(path, fallback){
       try{
@@ -15,12 +14,6 @@
       }catch(e){
         return fallback || '';
       }
-    }
-
-    var MAX_TRIES = 120, tries = 0;
-
-    function getQS(name){
-      try{ return new URLSearchParams(window.location.search).get(name); }catch(e){ return null; }
     }
 
     function setOpenState(isOpen){
@@ -297,14 +290,14 @@
         }
 
         var body = new URLSearchParams();
-        body.set('action', 'bp_acc_ajax_login');
+        body.set('action', 'f1_login');
         body.set('nonce', nonce);
         body.set('user', user);
         body.set('pass', pass);
         body.set('remember', remember);
         body.set('turnstile', ts);
 
-        fetch(window.f1_login_vars.ajax_url, {
+        fetch(CFG.ajax_url, {
           method: 'POST',
           credentials: 'same-origin',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
@@ -375,12 +368,12 @@
         }
 
         var body = new URLSearchParams();
-        body.set('action', 'bp_acc_ajax_lostpass');
+        body.set('action', 'f1_lostpass');
         body.set('nonce', nonce);
         body.set('user', user);
         body.set('turnstile', ts);
 
-        fetch(window.f1_login_vars.ajax_url, {
+        fetch(CFG.ajax_url, {
           method: 'POST',
           credentials: 'same-origin',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
@@ -415,7 +408,6 @@
       });
     }
 
-    /* ✅ STATE OF THE ART: AbortController gegen Race Conditions */
     function ajaxRegLiveCheck(root){
       var pane = root.querySelector('[data-bp-acc-pane="register"]');
       if (!pane) return;
@@ -434,7 +426,7 @@
       if (!userEl || !emailEl || !nonceEl || !submit || !userMsg || !emailMsg) return;
 
       var debounceTimer = null;
-      var currentController = null; // Speichert den aktuellen Request
+      var currentController = null;
 
       var state = { user: 'unknown', email: 'unknown' };
 
@@ -471,7 +463,6 @@
 
         if (!nonce) return;
 
-        // Wenn Felder leer sind, Reset
         if (!user && !email) {
             setMsg(userMsg, '', '');
             setMsg(emailMsg, '', '');
@@ -484,7 +475,6 @@
         setMsg(userMsg, 'is-wait', user ? msg('regcheck.checking_user', 'Prüfe Name…') : '');
         setMsg(emailMsg, 'is-wait', email ? msg('regcheck.checking_email', 'Prüfe E-Mail…') : '');
 
-        // ✅ ABORT PREVIOUS REQUEST
         if (currentController) {
             currentController.abort();
         }
@@ -492,17 +482,17 @@
         var signal = currentController.signal;
 
         var body = new URLSearchParams();
-        body.set('action', 'bp_acc_ajax_reg_check');
+        body.set('action', 'f1_reg_check');
         body.set('nonce', nonce);
         body.set('user', user);
         body.set('email', email);
 
-        fetch(window.f1_login_vars.ajax_url, {
+        fetch(CFG.ajax_url, {
           method: 'POST',
           credentials: 'same-origin',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
           body: body.toString(),
-          signal: signal // ✅ Request kann abgebrochen werden
+          signal: signal
         })
         .then(function(r){ return r.json(); })
         .then(function(data){
@@ -526,11 +516,7 @@
           syncSubmit();
         })
         .catch(function(err){
-          if (err.name === 'AbortError') {
-              // Request wurde absichtlich abgebrochen -> Nichts tun
-              return;
-          }
-          // Echter Fehler
+          if (err.name === 'AbortError') return;
           if (user) setMsg(userMsg, 'is-wait', msg('regcheck.cant_check', 'Fehler beim Prüfen.'));
           if (email) setMsg(emailMsg, 'is-wait', msg('regcheck.cant_check', 'Fehler beim Prüfen.'));
           syncSubmit();
@@ -541,10 +527,9 @@
 
       function schedule(){
         if (debounceTimer) clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(doCheck, 400); // 400ms warten nach Tippen
+        debounceTimer = setTimeout(doCheck, 400);
       }
 
-      // Nur auf Input hören, nicht auf Blur (verursacht doppelte Requests/Flackern)
       userEl.addEventListener('input', schedule);
       emailEl.addEventListener('input', schedule);
 
@@ -563,6 +548,7 @@
       panel.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
       panel.addEventListener('touchstart', function(e){ e.stopPropagation(); });
 
+      // Trigger button within the modal structure (desktop dropdown behavior)
       btn.addEventListener('click', function(e){
         e.preventDefault();
         e.stopPropagation();
@@ -612,94 +598,6 @@
       }catch(e){}
     }
 
-    var mq = window.matchMedia ? window.matchMedia('(max-width: 395px)') : null;
-
-    function ensureBar(topHeaderEl){
-      if (!topHeaderEl || !topHeaderEl.parentNode) return null;
-      var bar = document.querySelector('.bp-account-bar');
-      if (bar) return bar;
-      bar = document.createElement('div');
-      bar.className = 'bp-account-bar';
-      bar.innerHTML = '<div class="bp-account-bar__inner"></div>';
-      topHeaderEl.parentNode.insertBefore(bar, topHeaderEl.nextSibling);
-      return bar;
-    }
-
-    function cleanupBar(){
-      var bar = document.querySelector('.bp-account-bar');
-      if (!bar) return;
-      var inner = bar.querySelector('.bp-account-bar__inner');
-      var hasAccount = inner && inner.querySelector('[data-bp-account]');
-      if (!hasAccount) {
-        try { bar.parentNode.removeChild(bar); } catch(e) {}
-      }
-    }
-
-    function moveToHeader(node, socialsEl){
-      if (!node || !socialsEl || !socialsEl.parentNode) return;
-      socialsEl.parentNode.insertBefore(node, socialsEl.nextSibling);
-      cleanupBar();
-    }
-
-    function moveToBar(node, topHeaderEl){
-      if (!node || !topHeaderEl) return;
-      var bar = ensureBar(topHeaderEl);
-      if (!bar) return;
-      var inner = bar.querySelector('.bp-account-bar__inner');
-      if (!inner) return;
-      inner.appendChild(node);
-    }
-
-    function updatePlacement(node, topHeaderEl, socialsEl){
-      if (mq && mq.matches) moveToBar(node, topHeaderEl);
-      else moveToHeader(node, socialsEl);
-    }
-
-    function watch(node, topHeaderEl, socialsEl){
-      if (!mq) return;
-      var handler = function(){ updatePlacement(node, topHeaderEl, socialsEl); };
-      if (typeof mq.addEventListener === 'function') mq.addEventListener('change', handler);
-      else if (typeof mq.addListener === 'function') mq.addListener(handler);
-      else window.addEventListener('resize', handler, { passive:true });
-    }
-
-    function tryInsert(){
-      tries++;
-      var topHeaderEl = document.querySelector('.top-header');
-      var socialsEl = document.querySelector('.top-header .top-bar-right .aft-small-social-menu');
-
-      if (topHeaderEl && socialsEl && socialsEl.parentNode) {
-        // NOTE: We assume the HTML structure is injected via PHP separately or found.
-        // In the plugin version, we will output the HTML via PHP, and this JS just binds to it.
-        // However, the original code injected HTML via JS too.
-        // The refactored PHP class will output the HTML, so here we just look for it.
-
-        var existing = document.querySelector('[data-bp-account]');
-        if (existing) {
-             bind(existing);
-             renderTurnstileWithin(existing);
-             updatePlacement(existing, topHeaderEl, socialsEl);
-             watch(existing, topHeaderEl, socialsEl);
-
-             try {
-                var qs = getQS('bpacc');
-                var tab = getQS('bpacc_tab');
-                if (qs === 'login') {
-                  openIt(existing);
-                  if (tab === 'lost') setActivePane(existing, 'lost');
-                  else if (tab === 'register') setActivePane(existing, 'register');
-                  else setActivePane(existing, 'login');
-                }
-              } catch(e){}
-        }
-        return;
-      }
-      if (tries < MAX_TRIES) setTimeout(tryInsert, 50);
-    }
-
-    tryInsert();
-
-    // Social Login JS logic
     function createGoogleBtn(text) {
         var btn = document.createElement('button');
         btn.type = 'button';
@@ -733,19 +631,15 @@
 
         if (regPane) {
             var consentCb = document.getElementById('bp_reg_accept');
-
             if (consentCb && !consentCb.checked) {
                 consentCb.focus();
                 if (typeof consentCb.reportValidity === 'function') {
                     consentCb.setCustomValidity('Bitte akzeptiere den Datenschutz & die AGB, um dich mit Google zu registrieren.');
                     consentCb.reportValidity();
-                    consentCb.addEventListener('input', function(){
-                        consentCb.setCustomValidity('');
-                    }, {once:true});
+                    consentCb.addEventListener('input', function(){ consentCb.setCustomValidity(''); }, {once:true});
                 } else {
                     alert('Bitte akzeptiere zuerst Datenschutz & AGB.');
                 }
-
                 var label = consentCb.closest('label');
                 if (label) {
                     var oldColor = label.style.color;
@@ -759,19 +653,15 @@
         }
 
         btnClicked.classList.add('is-loading');
-
-        var target = window.f1_login_vars.google_auth_url;
-        if (consentGiven === 1) {
-            target += '&consent=1';
-        }
+        var target = CFG.google_auth_url || '/?bp_social_auth=google';
+        if (consentGiven === 1) target += '&consent=1';
         window.location.href = target;
     }
 
-    function injectSocial() {
-        var loginForm = document.querySelector('[data-bp-login-form]');
+    function injectSocialButtons(root) {
+        var loginForm = root.querySelector('[data-bp-login-form]');
         if (loginForm && !loginForm.querySelector('.bp-social-btn--google')) {
-            var linksContainer = loginForm.querySelector('.bp-account__links');
-            if (!linksContainer) linksContainer = loginForm.querySelector('.bp-account__tabs');
+            var linksContainer = loginForm.querySelector('.bp-account__links') || loginForm.querySelector('.bp-account__tabs');
             if (linksContainer) {
                 var container = document.createElement('div');
                 container.appendChild(createDivider());
@@ -780,10 +670,9 @@
             }
         }
 
-        var regPane = document.querySelector('[data-bp-acc-pane="register"] form');
+        var regPane = root.querySelector('[data-bp-acc-pane="register"] form');
         if (regPane && !regPane.querySelector('.bp-social-btn--google')) {
-             var tabsContainer = regPane.querySelector('.bp-account__tabs');
-             if (!tabsContainer) tabsContainer = regPane.querySelector('.bp-account__btnRegister');
+             var tabsContainer = regPane.querySelector('.bp-account__tabs') || regPane.querySelector('.bp-account__btnRegister');
              if (tabsContainer) {
                  var container = document.createElement('div');
                  container.appendChild(createDivider());
@@ -793,11 +682,27 @@
         }
     }
 
-    setTimeout(injectSocial, 500);
-    setTimeout(injectSocial, 1500);
+    function init(){
+        var root = document.querySelector('[data-bp-account]');
+        if(!root) return;
 
-    var observer = new MutationObserver(function(mutations) { injectSocial(); });
-    var target = document.querySelector('.top-header') || document.body;
-    observer.observe(target, { childList: true, subtree: true });
+        bind(root);
+        renderTurnstileWithin(root);
+        injectSocialButtons(root);
+
+        // Bind External Triggers (Shortcode Buttons)
+        document.addEventListener('click', function(e){
+            if(e.target.closest('.js-f1-login-trigger')){
+                e.preventDefault();
+                openIt(root);
+            }
+        });
+    }
+
+    if(document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 
   })();
