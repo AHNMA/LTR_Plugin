@@ -19,9 +19,9 @@ class F1_Login {
         add_filter( 'get_avatar_url', array( $this, 'google_avatar_url' ), 10, 3 );
 
         // AJAX Handlers
-        add_action( 'wp_ajax_nopriv_bp_acc_ajax_login', array( $this, 'ajax_login' ) );
-        add_action( 'wp_ajax_nopriv_bp_acc_ajax_lostpass', array( $this, 'ajax_lostpass' ) );
-        add_action( 'wp_ajax_nopriv_bp_acc_ajax_reg_check', array( $this, 'ajax_reg_check' ) );
+        add_action( 'wp_ajax_nopriv_f1_login', array( $this, 'ajax_login' ) );
+        add_action( 'wp_ajax_nopriv_f1_lostpass', array( $this, 'ajax_lostpass' ) );
+        add_action( 'wp_ajax_nopriv_f1_reg_check', array( $this, 'ajax_reg_check' ) );
 
         // Social Login
         add_action( 'init', array( $this, 'handle_google_auth' ) );
@@ -32,14 +32,17 @@ class F1_Login {
         // Frontend
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
         add_action( 'wp_footer', array( $this, 'render_login_modal' ), 100 );
+
+        // Shortcode
+        add_shortcode( 'f1_login_button', array( $this, 'render_shortcode' ) );
     }
 
     public function enqueue_assets() {
         if ( is_admin() ) return;
 
-        wp_enqueue_style( 'f1-login', F1_MANAGER_SUITE_URL . 'assets/css/f1-login.css', array(), F1_MANAGER_SUITE_VERSION );
+        wp_enqueue_style( 'f1-login', plugin_dir_url( __FILE__ ) . '../assets/css/f1-login.css', array(), '1.0.0' );
         wp_enqueue_script( 'turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit', array(), null, true );
-        wp_enqueue_script( 'f1-login', F1_MANAGER_SUITE_URL . 'assets/js/f1-login.js', array(), F1_MANAGER_SUITE_VERSION, true );
+        wp_enqueue_script( 'f1-login', plugin_dir_url( __FILE__ ) . '../assets/js/f1-login.js', array(), '1.0.0', true );
 
         wp_localize_script( 'f1-login', 'f1_login_vars', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -436,7 +439,7 @@ class F1_Login {
     }
 
     public function ajax_login() {
-        check_ajax_referer( 'bp_acc_login', 'nonce' );
+        check_ajax_referer( 'f1_login', 'nonce' );
 
         $ts = isset( $_POST['turnstile'] ) ? sanitize_text_field( $_POST['turnstile'] ) : '';
         $ok = self::turnstile_verify( $ts, 'login' );
@@ -456,7 +459,7 @@ class F1_Login {
     }
 
     public function ajax_lostpass() {
-        check_ajax_referer( 'bp_acc_lostpass', 'nonce' );
+        check_ajax_referer( 'f1_lostpass', 'nonce' );
         $ts = isset( $_POST['turnstile'] ) ? sanitize_text_field( $_POST['turnstile'] ) : '';
         $ok = self::turnstile_verify( $ts, 'lost' );
         if ( is_wp_error( $ok ) ) wp_send_json_error( array( 'message' => $ok->get_error_message() ), 403 );
@@ -477,7 +480,7 @@ class F1_Login {
     }
 
     public function ajax_reg_check() {
-        check_ajax_referer( 'bp_acc_regcheck', 'nonce' );
+        check_ajax_referer( 'f1_reg_check', 'nonce' );
 
         $username = isset( $_POST['user'] ) ? sanitize_user( $_POST['user'], true ) : '';
         $email = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
@@ -526,6 +529,12 @@ class F1_Login {
 
     // --- Render ---
 
+    public function render_shortcode() {
+        return '<button class="bp-account__btn js-f1-login-trigger" type="button">' .
+            '<span class="bp-account__label">' . ( is_user_logged_in() ? esc_html( self::msg( 'ui.btn_account_logged_in' ) ) : esc_html( self::msg( 'ui.btn_account_logged_out' ) ) ) . '</span>' .
+        '</button>';
+    }
+
     public function render_login_modal() {
         if ( is_admin() ) return;
 
@@ -533,17 +542,6 @@ class F1_Login {
         $reg_errors = $GLOBALS['bp_acc_reg_errors'] ?? [];
         $reg_vals = $GLOBALS['bp_acc_reg_values'] ?? [];
 
-        // Only load if not logged in or needed
-        // HTML Structure...
-        // Note: I will read the structure from the original file again to ensure exact markup matching.
-        // For brevity in this thought process, I will assume the structure is copied.
-
-        // ... (HTML markup echo) ...
-
-        $this->output_login_html($default_tab, $reg_errors, $reg_vals);
-    }
-
-    private function output_login_html($default_tab, $reg_errors, $reg_vals) {
         $profile_url = self::get_profile_url();
         $logout_url = wp_logout_url( home_url( '/' ) );
         $can_register = get_option( 'users_can_register' );
@@ -555,13 +553,6 @@ class F1_Login {
 
         ?>
         <div class="bp-account" data-bp-account data-bp-default-tab="<?php echo esc_attr($default_tab); ?>" data-bp-auto-open="<?php echo !empty($reg_errors) ? '1' : '0'; ?>">
-            <button class="bp-account__btn" type="button" aria-haspopup="true" aria-expanded="false" data-bp-account-btn>
-                <span class="bp-account__label"><?php echo is_user_logged_in() ? esc_html(self::msg('ui.btn_account_logged_in')) : esc_html(self::msg('ui.btn_account_logged_out')); ?></span>
-                <span class="bp-account__chevSlot" aria-hidden="true">
-                    <span class="bp-account__chevDown">▼</span><span class="bp-account__chevUp">▲</span>
-                </span>
-            </button>
-
             <div class="bp-account__panel" role="dialog" aria-label="Account" data-bp-account-panel>
                 <div class="bp-account__header">
                     <div class="bp-account__title"><?php echo is_user_logged_in() ? esc_html(self::msg('ui.title_logged_in')) : esc_html(self::msg('ui.title_logged_out')); ?></div>
@@ -595,7 +586,7 @@ class F1_Login {
                                 <p class="login-remember">
                                     <label><input type="checkbox" name="bp_login_remember" value="1" /> <?php echo esc_html(self::msg('ui.label_remember')); ?></label>
                                 </p>
-                                <?php wp_nonce_field('bp_acc_login', 'bp_acc_login_nonce'); ?>
+                                <?php wp_nonce_field('f1_login', 'bp_acc_login_nonce'); ?>
                                 <div class="bp-acc-turnstile">
                                     <div class="bp-turnstile" data-sitekey="<?php echo esc_attr($ts_sitekey); ?>" data-action="login" data-response-field-name="ts_login"></div>
                                 </div>
@@ -619,7 +610,7 @@ class F1_Login {
                                     <span class="bp-acc-labelRow"><label for="bp_lost_user"><?php echo esc_html(self::msg('ui.label_user_or_email')); ?></label></span>
                                     <input type="text" id="bp_lost_user" name="bp_lost_user" autocomplete="username email" required />
                                 </p>
-                                <?php wp_nonce_field('bp_acc_lostpass', 'bp_acc_lostpass_nonce'); ?>
+                                <?php wp_nonce_field('f1_lostpass', 'bp_acc_lostpass_nonce'); ?>
                                 <div class="bp-acc-turnstile">
                                     <div class="bp-turnstile" data-sitekey="<?php echo esc_attr($ts_sitekey); ?>" data-action="lost" data-response-field-name="ts_lost"></div>
                                 </div>
@@ -675,7 +666,7 @@ class F1_Login {
                                     </p>
                                     <input type="hidden" name="bp_acc_action" value="register" />
                                     <?php wp_nonce_field('bp_acc_register', 'bp_acc_reg_nonce'); ?>
-                                    <?php wp_nonce_field('bp_acc_regcheck', 'bp_acc_regcheck_nonce'); ?>
+                                    <?php wp_nonce_field('f1_reg_check', 'bp_acc_regcheck_nonce'); ?>
                                     <div class="bp-acc-turnstile">
                                         <div class="bp-turnstile" data-sitekey="<?php echo esc_attr($ts_sitekey); ?>" data-action="register" data-response-field-name="ts_register"></div>
                                     </div>
