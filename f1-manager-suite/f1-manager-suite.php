@@ -60,7 +60,7 @@ function f1_manager_suite_init() {
     F1_WM_Stand::get_instance();
     F1_Teams::get_instance();
     F1_Drivers::get_instance();
-    F1_Manager_Calendar::get_instance();
+    new F1_Manager_Calendar();
     F1_Theme_Tweaks::get_instance();
     F1_Footer::get_instance();
     F1_Logo_Switcher::get_instance();
