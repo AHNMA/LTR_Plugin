@@ -7,62 +7,91 @@ if ( ! defined( 'ABSPATH' ) ) {
 class F1_Theme_Tweaks {
 
     public function __construct() {
-        // Burger Menu Fixes
-        add_action( 'wp_head', array( $this, 'output_burger_css_fix' ), 999 );
-        add_action( 'wp_footer', array( $this, 'output_burger_js_fix' ), 999 );
+        // Enqueue Assets (CSS/JS)
+        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-        // External Links (Footer)
+        // External Links (Footer) - Kept as is, assuming it was part of previous logic or standard tweak
         add_action( 'wp_footer', array( $this, 'external_links_fix' ) );
-
-        // Misc
-        // Add any misc hooks here
     }
 
-    public function output_burger_css_fix() {
+    public function enqueue_scripts() {
         if ( is_admin() ) return;
-        // Output inline CSS for burger menu fixes (migrated from Burger-Menü.php)
-        echo '<style id="bp-burger-fix">
-        /* Burger Dracula Fixes */
+
+        // 1. JS
+        wp_enqueue_script(
+            'f1-theme-tweaks-js',
+            plugin_dir_url( __FILE__ ) . '../assets/js/f1-theme-tweaks.js',
+            array(),
+            '1.0.0',
+            true
+        );
+
+        // 2. CSS (Inline via Dummy)
+        // Register a dummy handle to attach inline styles to
+        wp_register_style( 'f1-theme-tweaks-css', false );
+        wp_enqueue_style( 'f1-theme-tweaks-css' );
+
+        $css = '
+        /* --------------------------------------------
+           BURGER: Dracula darf das Weiß nicht ummappen
+           -------------------------------------------- */
         html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham,
         html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham::before,
         html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham::after{
           --dracula-background-ffffff: #ffffff !important;
           --dracula-border-ffffff: #ffffff !important;
-          filter: none !important; opacity: 1 !important;
+          filter: none !important;
+          -webkit-filter: none !important;
+          opacity: 1 !important;
         }
-        html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham:not(.exit){ background-color: #ffffff !important; }
+
+        /* CLOSED: Burger (mittlere Linie = i.ham selbst) */
+        html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham:not(.exit){
+          background-color: #ffffff !important;
+        }
         html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham:not(.exit)::before,
-        html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham:not(.exit)::after{ background-color: #ffffff !important; }
+        html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham:not(.exit)::after{
+          background-color: #ffffff !important;
+        }
 
-        html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham.exit{ background-color: transparent !important; box-shadow: none !important; }
+        /* OPEN: X (mittlere Linie muss weg) */
+        html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham.exit{
+          background-color: transparent !important;
+          box-shadow: none !important;
+        }
         html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham.exit::before,
-        html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham.exit::after{ background-color: #ffffff !important; }
+        html[data-dracula-scheme="dark"] body #main-navigation-bar i.ham.exit::after{
+          background-color: #ffffff !important;
+        }
 
-        html[data-dracula-scheme="dark"] body #main-navigation-bar ul#menu-hauptmenue.menu-mobile{ background-color: #181a1b !important; }
+        /* --------------------------------------------
+           OFFCANVAS MENU: Fallback Hintergrund
+           -------------------------------------------- */
+        html[data-dracula-scheme="dark"] body #main-navigation-bar ul#menu-hauptmenue.menu-mobile{
+          background-color: #181a1b !important;
+        }
+
+        /* --------------------------------------------
+           MENU ITEMS: SOLID Hintergründe im Darkmode (Fallback)
+           -------------------------------------------- */
         html[data-dracula-scheme="dark"] body #main-navigation-bar ul#menu-hauptmenue.menu-mobile li.menu-item,
-        html[data-dracula-scheme="dark"] body #main-navigation-bar ul#menu-hauptmenue.menu-mobile li.menu-item > a{ background-color: #181a1b !important; background-image: none !important; }
+        html[data-dracula-scheme="dark"] body #main-navigation-bar ul#menu-hauptmenue.menu-mobile li.menu-item > a{
+          background-color: #181a1b !important;
+          background-image: none !important;
+        }
 
-        /* Ticker Blocking */
+        /* =====================================================
+           ✅ WM-Ticker darf NICHT "durch" Burger/Menu klicken
+           ===================================================== */
         html.bp-nav-open .f1wmt-banner-exclusive-posts-wrapper,
         html.bp-nav-open .f1wmt-banner-exclusive-posts-wrapper *,
         html.bp-nav-arming .f1wmt-banner-exclusive-posts-wrapper,
-        html.bp-nav-arming .f1wmt-banner-exclusive-posts-wrapper *{ pointer-events: none !important; }
-        </style>';
-    }
+        html.bp-nav-arming .f1wmt-banner-exclusive-posts-wrapper *{
+          pointer-events: none !important;
+        }
+        ';
 
-    public function output_burger_js_fix() {
-        if ( is_admin() ) return;
-        // JS for Burger Menu (migrated)
-        ?>
-        <script>
-        (function(){
-            // ... (Content from Burger-Menü.php JS)
-            // For brevity, I assume the full JS logic is placed here or in assets/js/f1-theme.js
-            // I'll enqueue it if I put it in a file, but original was inline.
-            // I'll keep it short here as placeholder for the migration action.
-        })();
-        </script>
-        <?php
+        wp_add_inline_style( 'f1-theme-tweaks-css', $css );
     }
 
     public function external_links_fix() {
